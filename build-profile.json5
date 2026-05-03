@@ -1,6 +1,20 @@
 {
   "app": {
-    "signingConfigs": [],
+    "signingConfigs": [
+      {
+        "name": "default",
+        "type": "HarmonyOS",
+        "material": {
+          "certpath": "C:\\Users\\Administrator\\.ohos\\config\\default_MeowStreetMall_4ZvIqRAcwJvmQ9NZ3Jbb3ZQXwnB_lLoUUsLMoGJ-jBs=.cer",
+          "keyAlias": "debugKey",
+          "keyPassword": "0000001BB18E1100DC076FCA1C56ED4BEC6B8B70624CAC48865CE84D8236A7B68283CA699754EBB24F9AA6",
+          "profile": "C:\\Users\\Administrator\\.ohos\\config\\default_MeowStreetMall_4ZvIqRAcwJvmQ9NZ3Jbb3ZQXwnB_lLoUUsLMoGJ-jBs=.p7b",
+          "signAlg": "SHA256withECDSA",
+          "storeFile": "C:\\Users\\Administrator\\.ohos\\config\\default_MeowStreetMall_4ZvIqRAcwJvmQ9NZ3Jbb3ZQXwnB_lLoUUsLMoGJ-jBs=.p12",
+          "storePassword": "0000001BADD9FC16B80D6EB4C207924060D22BDFAF70D9A0E3FA03115C201479A71B3ED61A5313FA13DAF2"
+        }
+      }
+    ],
     "products": [
       {
         "name": "default",

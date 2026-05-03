@@ -10,3 +10,8 @@
 /.clang-tidy
 **/.test
 /.appanalyzer
+# 鸿蒙本地签名配置
+build-profile.json5
+*.p12
+*.cer
+*.p7b
