@@ -1,4 +1,8 @@
 import { TabItem } from 'basic'
+import { CartView } from 'cart'
+import { CategoryView } from 'category'
+import { HomePageView } from 'homepage'
+import { MineView } from 'mine'
 
 @Entry
 @ComponentV2
@@ -14,7 +18,17 @@ struct Index {
   build() {
     Tabs({ barPosition: BarPosition.End, index: $$this.activeIndex }) {
       ForEach(this.list, (item: TabItem, index: number) => {
-        TabContent() {}
+        TabContent() {
+          if (index == 0) {
+            HomePageView()
+          } else if (index == 1) {
+            CategoryView()
+          } else if (index == 2) {
+            CartView()
+          } else if (index == 3) {
+            MineView()
+          }
+        }
         .tabBar(this.getTabItemBuilder(item, index))
       })
     }
