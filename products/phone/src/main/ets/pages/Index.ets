@@ -1,4 +1,4 @@
-import { TabItem } from 'basic'
+import { Loggar, TabItem } from 'basic'
 import { CartView } from 'cart'
 import { CategoryView } from 'category'
 import { HomePageView } from 'homepage'
