@@ -73,6 +73,8 @@ export class ScreenManager {
 
   /**
    * 设置安全区高度
+   * @param top 顶部高度
+   * @param bottom 底部高度
    */
   setAreaHeight(top: number, bottom: number) {
     const appStorage = AppStorageV2.connect(AppSafeArea, () => new AppSafeArea())
