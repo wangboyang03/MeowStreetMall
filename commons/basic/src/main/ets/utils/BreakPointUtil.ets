@@ -1,6 +1,7 @@
 import { AppStorageV2, display, window } from "@kit.ArkUI"
 import { BreakPointEnum } from "../models/breakPoint"
-import { AppBreakPoint } from "../models/common"
+import { AppBreakPoint, AppSafeArea } from "../models/common"
+import { deviceInfo } from "@kit.BasicServicesKit"
 
 export class ScreenManager {
   private static sInstance?: ScreenManager
@@ -32,6 +33,22 @@ export class ScreenManager {
     windowObject.off("windowSizeChange")
   }
 
+  // 全屏模式
+  async fullScreenMode() {
+    const windowObject = await this.getWindowObject() // 获取window对象
+    windowObject.setWindowLayoutFullScreen(true) // 设置窗口全屏
+    // 设置页面安全区内容避让 获取系统栏顶部和底部高度
+    this.setAreaHeight(deviceInfo.deviceType == "2in1" ? 0 : px2vp(windowObject.getWindowAvoidArea(window.AvoidAreaType.TYPE_SYSTEM).topRect.height),
+      px2vp(deviceInfo.deviceType == "2in1" ? 0 : windowObject.getWindowAvoidArea(window.AvoidAreaType.TYPE_NAVIGATION_INDICATOR).bottomRect.height))
+  }
+
+  // 退出全屏
+  async exitFull() {
+    const windowObject = await this.getWindowObject() // 获取window对象
+    windowObject.setWindowLayoutFullScreen(false) // 退出全屏
+    this.setAreaHeight(0, 0)
+  }
+
   /**
    * 判断屏幕
    * @param width 屏幕宽度
@@ -51,6 +68,17 @@ export class ScreenManager {
     const appStorage = AppStorageV2.connect(AppBreakPoint, () => new AppBreakPoint())
     if (appStorage != undefined) {
       appStorage.breakPoint = breakPoint // 将断点值存入到全局状态
+    }
+  }
+
+  /**
+   * 设置安全区高度
+   */
+  setAreaHeight(top: number, bottom: number) {
+    const appStorage = AppStorageV2.connect(AppSafeArea, () => new AppSafeArea())
+    if (appStorage != undefined) {
+      appStorage.topHeight = top
+      appStorage.bottomHeight = bottom
     }
   }
 }

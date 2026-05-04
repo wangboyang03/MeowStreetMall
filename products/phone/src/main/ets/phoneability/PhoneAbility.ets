@@ -24,6 +24,7 @@ export default class PhoneAbility extends UIAbility {
     hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onWindowStageCreate');
     ScreenManager.getInstance().mContext = this.context; // 获取当前上下文
     ScreenManager.getInstance().registerScreenWidthChange() // 从启动器注册屏幕宽度改变监听
+    ScreenManager.getInstance().fullScreenMode() // 开启沉浸式
     windowStage.loadContent('pages/Index', (err) => {
       if (err.code) {
         hilog.error(DOMAIN, 'testTag', 'Failed to load the content. Cause: %{public}s', JSON.stringify(err));

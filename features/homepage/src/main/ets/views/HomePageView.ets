@@ -1,4 +1,4 @@
-import { AppBreakPoint, BreakPointEnum, BreakPointType, CategoryItem, GoodsItem } from "basic";
+import { AppBreakPoint, AppSafeArea, BreakPointEnum, BreakPointType, CategoryItem, GoodsItem } from "basic";
 import { DiscountGoods, Goods } from "../components";
 import { Banner, Params, DiscountType } from "../models";
 import { AppStorageV2 } from "@kit.ArkUI";
@@ -12,7 +12,8 @@ export struct HomePageView {
   @Local oneGoods: GoodsItem[] = [] // 一站买全
   @Local newGoods: GoodsItem[] = [] // 新鲜好物
   @Local recommendGoods: GoodsItem[] = [] // 猜喜
-  breakObject:AppBreakPoint = AppStorageV2.connect(AppBreakPoint, ()=> new AppBreakPoint())!
+  breakObject:AppBreakPoint = AppStorageV2.connect(AppBreakPoint, ()=> new AppBreakPoint())! // 断点对象
+  safeAreaObject: AppSafeArea = AppStorageV2.connect(AppSafeArea, () => new AppSafeArea())! // 安全区避让对象
 
   /**
    * 临时mock数据
@@ -124,7 +125,7 @@ export struct HomePageView {
             .borderRadius(20)
             .padding({ left: 12 })
           }
-          .padding({ left: 16, right: 16 })
+          .padding({ left: 16, right: 16, top: this.safeAreaObject.topHeight })
         }
         .width('100%')
 

@@ -1,4 +1,4 @@
-import { AppBreakPoint, BreakPointType, TabItem } from 'basic'
+import { AppBreakPoint, AppSafeArea, BreakPointType, TabItem } from 'basic'
 import { CartView } from 'cart'
 import { CategoryView } from 'category'
 import { HomePageView } from 'homepage'
@@ -9,7 +9,8 @@ import { AppStorageV2 } from '@kit.ArkUI'
 @ComponentV2
 struct Index {
   @Local activeIndex: number = 0 // 默认选中TabContent
-  breakObject:AppBreakPoint = AppStorageV2.connect(AppBreakPoint, ()=> new AppBreakPoint())!
+  breakObject:AppBreakPoint = AppStorageV2.connect(AppBreakPoint, ()=> new AppBreakPoint())! // 断点对象
+  safeAreaObject: AppSafeArea = AppStorageV2.connect(AppSafeArea, ()=> new AppSafeArea())! // 安全区避让对象
   list: TabItem[] = [
     { text: '首页', normal: $r('app.media.ic_public_home_normal'), active: $r('app.media.ic_public_home_active') },
     { text: '分类', normal: $r('app.media.ic_public_pro_normal'), active: $r('app.media.ic_public_pro_active') },
@@ -54,6 +55,7 @@ struct Index {
       md: 300,
       lg: 0
     }).getValue(this.breakObject.breakPoint)) // 阻止切换动画
+    .padding({ bottom: this.safeAreaObject.bottomHeight })
   }
 
   /**
