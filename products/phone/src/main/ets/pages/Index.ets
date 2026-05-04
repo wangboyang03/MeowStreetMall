@@ -1,11 +1,9 @@
-import { TabItem } from 'basic'
-import { AppBreakPoint } from 'basic/src/main/ets/models/common'
+import { AppBreakPoint, BreakPointType, TabItem } from 'basic'
 import { CartView } from 'cart'
 import { CategoryView } from 'category'
 import { HomePageView } from 'homepage'
 import { MineView } from 'mine'
 import { AppStorageV2 } from '@kit.ArkUI'
-import { BreakPointType } from 'basic/src/main/ets/models/breakPoint'
 
 @Entry
 @ComponentV2
