@@ -1,1 +1,2 @@
-export * from './Loggar'
+export * from './LoggarUtil'
+export * from './BreakPointUtil'

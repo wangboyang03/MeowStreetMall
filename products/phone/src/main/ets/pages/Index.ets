@@ -1,13 +1,17 @@
-import { Loggar, TabItem } from 'basic'
+import { TabItem } from 'basic'
+import { AppBreakPoint } from 'basic/src/main/ets/models/common'
 import { CartView } from 'cart'
 import { CategoryView } from 'category'
 import { HomePageView } from 'homepage'
 import { MineView } from 'mine'
+import { AppStorageV2 } from '@kit.ArkUI'
+import { BreakPointType } from 'basic/src/main/ets/models/breakPoint'
 
 @Entry
 @ComponentV2
 struct Index {
   @Local activeIndex: number = 0 // 默认选中TabContent
+  breakObject:AppBreakPoint = AppStorageV2.connect(AppBreakPoint, ()=> new AppBreakPoint())!
   list: TabItem[] = [
     { text: '首页', normal: $r('app.media.ic_public_home_normal'), active: $r('app.media.ic_public_home_active') },
     { text: '分类', normal: $r('app.media.ic_public_pro_normal'), active: $r('app.media.ic_public_pro_active') },
@@ -16,7 +20,11 @@ struct Index {
   ]
 
   build() {
-    Tabs({ barPosition: BarPosition.End, index: $$this.activeIndex }) {
+    Tabs({ barPosition: new BreakPointType({
+      sm: BarPosition.End,
+      md: BarPosition.End,
+      lg: BarPosition.Start,
+    }).getValue(this.breakObject?.breakPoint), index: $$this.activeIndex }) {
       ForEach(this.list, (item: TabItem, index: number) => {
         TabContent() {
           if (index == 0) {
@@ -32,6 +40,16 @@ struct Index {
         .tabBar(this.getTabItemBuilder(item, index))
       })
     }
+    .barHeight(new BreakPointType({
+      sm: 60,
+      md: 60,
+      lg: 120
+    }).getValue(this.breakObject?.breakPoint))
+    .vertical(new BreakPointType({
+      sm: false,
+      md: false,
+      lg: true
+    }).getValue(this.breakObject?.breakPoint))
     .scrollable(false) // 阻止滚动切换
   }
 

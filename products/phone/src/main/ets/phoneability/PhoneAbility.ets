@@ -1,6 +1,7 @@
 import { AbilityConstant, ConfigurationConstant, UIAbility, Want } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window } from '@kit.ArkUI';
+import { ScreenManager } from 'basic';
 
 const DOMAIN = 0x0000;
 
@@ -21,7 +22,8 @@ export default class PhoneAbility extends UIAbility {
   onWindowStageCreate(windowStage: window.WindowStage): void {
     // Main window is created, set main page for this ability
     hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onWindowStageCreate');
-
+    ScreenManager.getInstance().mContext = this.context; // 获取当前上下文
+    ScreenManager.getInstance().registerScreenWidthChange() // 从启动器注册屏幕宽度改变监听
     windowStage.loadContent('pages/Index', (err) => {
       if (err.code) {
         hilog.error(DOMAIN, 'testTag', 'Failed to load the content. Cause: %{public}s', JSON.stringify(err));
@@ -34,6 +36,7 @@ export default class PhoneAbility extends UIAbility {
   onWindowStageDestroy(): void {
     // Main window is destroyed, release UI related resources
     hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onWindowStageDestroy');
+    ScreenManager.getInstance().unRegisterWindowSizeChange() // 取消监听
   }
 
   onForeground(): void {
