@@ -49,6 +49,11 @@ struct Index {
       lg: true
     }).getValue(this.breakObject?.breakPoint))
     .scrollable(false) // 阻止滚动切换
+    .animationDuration(new BreakPointType({
+      sm: 300,
+      md: 300,
+      lg: 0
+    }).getValue(this.breakObject.breakPoint)) // 阻止切换动画
   }
 
   /**
