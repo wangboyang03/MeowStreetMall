@@ -1,6 +1,7 @@
-import { CategoryItem, GoodsItem } from "basic";
+import { AppBreakPoint, BreakPointEnum, BreakPointType, CategoryItem, GoodsItem } from "basic";
 import { DiscountGoods, Goods } from "../components";
 import { Banner, Params, DiscountType } from "../models";
+import { AppStorageV2 } from "@kit.ArkUI";
 
 @ComponentV2
 export struct HomePageView {
@@ -11,6 +12,7 @@ export struct HomePageView {
   @Local oneGoods: GoodsItem[] = [] // 一站买全
   @Local newGoods: GoodsItem[] = [] // 新鲜好物
   @Local recommendGoods: GoodsItem[] = [] // 猜喜
+  breakObject:AppBreakPoint = AppStorageV2.connect(AppBreakPoint, ()=> new AppBreakPoint())!
 
   /**
    * 临时mock数据
@@ -79,22 +81,32 @@ export struct HomePageView {
   build() {
     Scroll() {
       Column() {
-        // 轮播图 + 搜索
+        // 轮播图+搜索
         Stack({ alignContent: Alignment.Top }) {
           Swiper() {
             ForEach(this.banners, (item: Banner) => {
               Image(item.imgUrl)
             })
           }
+          .displayCount(new BreakPointType({
+            sm: 1,
+            md: 2,
+            lg: 3
+          }).getValue(this.breakObject.breakPoint)) // 设置Swiper视窗内元素显示个数
+          .itemSpace(new BreakPointType({
+            sm: 0,
+            md: 10,
+            lg: 20
+          }).getValue(this.breakObject.breakPoint)) // 轮播图视窗内元素间距
           .indicator(
-            DotIndicator.dot()
-              .itemWidth(8)
-              .itemHeight(4)
-              .color('#33191919')
-              .selectedItemWidth(24)
-              .selectedItemHeight(4)
-              .selectedColor('#191919')
-          )
+            this.breakObject.breakPoint == BreakPointEnum.SM ? DotIndicator.dot()
+                .itemWidth(8)
+                .itemHeight(4)
+                .color('#33191919')
+                .selectedItemWidth(24)
+                .selectedItemHeight(4)
+                .selectedColor('#191919') : false
+          ) // 轮播图指示器
 
           Row() {
             Row({ space: 4 }) {
@@ -120,7 +132,11 @@ export struct HomePageView {
         // 分类
         Column({ space: 10 }) {
           // 分类
-          List({ space: 16 }) {
+          List({ space: new BreakPointType({
+            sm: 14,
+            md: 36,
+            lg: 72
+          }).getValue(this.breakObject.breakPoint) }) {
             ForEach(this.categories, (item: CategoryItem) => {
               ListItem() {
                 Column() {
@@ -206,7 +222,11 @@ export struct HomePageView {
           }
 
           // 新鲜好物
-          Column({ space: 10 }) {
+          Column({ space: new BreakPointType({
+            sm: 14,
+            md: 36,
+            lg: 72
+          }).getValue(this.breakObject.breakPoint) }) {
             Image($r('app.media.home_new'))
               .width(146)
               .height(19)
