@@ -10,3 +10,9 @@ export class AppSafeArea {
   @Trace topHeight: number = 0
   @Trace bottomHeight: number = 0
 }
+
+export interface ResponseData<T> {
+  code: string
+  message: string
+  result: T
+}

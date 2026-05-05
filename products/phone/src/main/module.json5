@@ -10,7 +10,8 @@
       "2in1"
     ],
     "requestPermissions": [
-      {"name": "ohos.permission.INTERNET"}
+      {"name": "ohos.permission.INTERNET"}, /** 申请网络权限 */
+      {"name": "ohos.permission.GET_NETWORK_INFO"}, /** 获取当前网络状态 */
     ],
     "deliveryWithInstall": true,
     "installationFree": false,

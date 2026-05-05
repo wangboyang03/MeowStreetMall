@@ -18,3 +18,24 @@ export enum DiscountType {
   DISCOUNT,
   NEW
 }
+
+// 推荐
+export interface HotRecommend {
+  id: string;
+  subTypes: SubType[];
+  title: string;
+}
+
+export interface SubType {
+  id: string;
+  title: string;
+  goodsItems: GoodsItems;
+}
+
+export interface GoodsItems {
+  counts: number;
+  items: GoodsItem[];
+  page: number;
+  pages: number;
+  pageSize: number;
+}
