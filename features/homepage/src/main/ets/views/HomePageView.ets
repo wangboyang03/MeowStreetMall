@@ -21,13 +21,26 @@ export struct HomePageView {
    * 获取接口数据
    */
   async getHomePageData() {
-    this.banners = await getBannerApi()
-    this.categories = await getCategoryApi()
-    const result = await getHotRecommendApi()
-    this.saleGoods = result.subTypes?.[0]?.goodsItems?.items ?? []
-    this.hotGoods = (await getInVogueApi()).subTypes?.[0]?.goodsItems?.items ?? []
-    this.oneGoods = (await getOneStopApi()).subTypes?.[0]?.goodsItems?.items ?? []
-    this.newGoods = await getHomePageNewApi()
+    /** 获取到数据一次性渲染 创建一个微队列 无论成功还是失败 等待所有执行完毕 **/
+    const homePageData = await Promise.allSettled([getBannerApi(), getCategoryApi(), getHotRecommendApi(), getInVogueApi(), getOneStopApi(), getHomePageNewApi()])
+    if (homePageData[0].status == "fulfilled") {
+      this.banners = homePageData[0].value
+    }
+    if (homePageData[1].status == "fulfilled") {
+      this.categories = homePageData[1].value
+    }
+    if (homePageData[2].status == "fulfilled") {
+      this.saleGoods = homePageData[2].value?.subTypes?.[0]?.goodsItems?.items ?? []
+    }
+    if (homePageData[3].status == "fulfilled") {
+      this.hotGoods = homePageData[3].value?.subTypes?.[0]?.goodsItems?.items ?? []
+    }
+    if (homePageData[4].status == "fulfilled") {
+      this.oneGoods = homePageData[4].value?.subTypes?.[0]?.goodsItems?.items ?? []
+    }
+    if (homePageData[5].status === "fulfilled") {
+      this.newGoods = homePageData[5].value
+    }
   }
 
   aboutToAppear(): void {
