@@ -11,6 +11,7 @@ export struct Goods {
       if (this.smallImage) {
         Row() {
           Image(this.goodsItem.picture)
+            .draggable(false)
             .width('100%')
             .aspectRatio(1)
         }
@@ -18,6 +19,7 @@ export struct Goods {
         .padding(20)
       } else {
         Image(this.goodsItem.picture)
+          .draggable(false)
           .width('100%')
           .aspectRatio(1)
       }

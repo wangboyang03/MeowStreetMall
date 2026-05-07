@@ -19,6 +19,7 @@ export struct DiscountGoods {
   @Builder CommandBuilder() {
     Column() {
       Image(this.goodsItem.picture)
+        .draggable(false)
         .width(70)
         .aspectRatio(1)
       Row() {
@@ -63,6 +64,7 @@ export struct DiscountGoods {
   @Builder DiscountBuilder() {
     Column({ space: 8 }) {
       Image(this.goodsItem.picture)
+        .draggable(false)
         .width(54)
         .aspectRatio(1)
       Text('¥' + Number(this.goodsItem.price))
@@ -71,6 +73,7 @@ export struct DiscountGoods {
         .fontWeight(500)
       Stack({ alignContent: Alignment.Top }) {
         Image($r('app.media.home_goods_discount'))
+          .draggable(false)
           .width(48)
           .height(20)
         Text('立减 90')
@@ -87,6 +90,7 @@ export struct DiscountGoods {
   @Builder NewBuilder() {
     Column() {
       Image(this.goodsItem.picture)
+        .draggable(false)
         .width(60)
         .aspectRatio(1)
       Text('¥' + Number(this.goodsItem.price))

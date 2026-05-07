@@ -66,6 +66,7 @@ struct Index {
   @Builder getTabItemBuilder(item: TabItem, index: number) {
     Column() {
       Image(this.activeIndex == index ? item.active : item.normal)
+        .draggable(false)
         .width(24)
         .aspectRatio(1)
       Text(item.text)

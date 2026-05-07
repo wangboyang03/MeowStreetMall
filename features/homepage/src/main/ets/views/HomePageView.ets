@@ -56,7 +56,7 @@ export struct HomePageView {
           Stack({ alignContent: Alignment.Top }) {
             Swiper() {
               ForEach(this.banners, (item: Banner) => {
-                Image(item.imgUrl)
+                Image(item.imgUrl).draggable(false)
               })
             }
             .displayCount(new BreakPointType({
@@ -82,6 +82,7 @@ export struct HomePageView {
             Row() {
               Row({ space: 4 }) {
                 Image($r('[basic].media.ic_public_search'))
+                  .draggable(false)
                   .width(16)
                   .height(16)
                   .fillColor($r('[basic].color.white'))
@@ -112,6 +113,7 @@ export struct HomePageView {
                 ListItem() {
                   Column() {
                     Image(item.picture)
+                      .draggable(false)
                       .width(56)
                       .aspectRatio(1)
                     Text(item.name)
@@ -142,10 +144,12 @@ export struct HomePageView {
             // 特惠推荐
             Column({ space: 10 }) {
               Image($r('app.media.home_cmd_title'))
+                .draggable(false)
                 .width(150)
                 .height(20)
               Row() {
                 Image($r('app.media.home_cmd_inner'))
+                  .draggable(false)
                   .width(86)
                   .height(116)
                 List({ space: 10 }) {
@@ -199,6 +203,7 @@ export struct HomePageView {
               lg: 72
             }).getValue(this.breakObject.breakPoint) }) {
               Image($r('app.media.home_new'))
+                .draggable(false)
                 .width(146)
                 .height(19)
               List({ space: 10 }) {
@@ -257,6 +262,7 @@ export struct HomePageView {
       Row() {
         Row({ space: 4 }) {
           Image($r('[basic].media.ic_public_search'))
+            .draggable(false)
             .width(16)
             .height(16)
             .fillColor($r('[basic].color.white'))
