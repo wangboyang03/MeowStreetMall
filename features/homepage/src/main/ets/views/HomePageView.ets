@@ -1,4 +1,4 @@
-import { AppBreakPoint, AppSafeArea, BreakPointEnum, BreakPointType, CategoryItem, GoodsItem } from "basic";
+import { AppBreakPoint, AppSafeArea, BreakPointEnum, BreakPointType, CategoryItem, GoodsItem, LazyForEachDataSource } from "basic";
 import { DiscountGoods, Goods } from "../components";
 import { Banner, Params, DiscountType } from "../models";
 import { AppStorageV2, promptAction } from "@kit.ArkUI";
@@ -20,6 +20,7 @@ export struct HomePageView {
   @Local recommendPage: number = 1 // 请求猜喜的页码
   @Local isReachLoad: boolean = false // 是否已经请求完成
   @Local isFinished: boolean = false // 是否已经没有数据了
+  recommendDataSource: LazyForEachDataSource<GoodsItem> = new LazyForEachDataSource() // 实例化猜喜LazyForEach数据源
 
   /**
    * 获取接口数据
@@ -51,19 +52,19 @@ export struct HomePageView {
    * 获取猜喜数据
    */
   async getRecommendData() {
-    this.recommendGoods = await getRecommendApi({ limit: 8 * this.recommendPage })
-    if (this.recommendGoods.length == this.recommendPage * 8) {
+    const recommendList = await getRecommendApi({ limit: 8 * this.recommendPage })
+    if (recommendList.length == this.recommendPage * 8) {
       // 内容没有结束 还可以加载下一页
       this.recommendPage++
     } else {
       this.isFinished = true // 加载完成了
       promptAction.showToast({ message: '没有下一页了' })
     }
+    this.recommendDataSource.loadDataSource(recommendList) // 重新赋值
   }
 
   aboutToAppear(): void {
     this.getHomePageData() // 请求接口数据
-    this.getRecommendData() // 获取猜喜数据
   }
 
   build() {
@@ -245,7 +246,8 @@ export struct HomePageView {
 
             // 猜喜
             WaterFlow() {
-              ForEach(this.recommendGoods, (item: GoodsItem) => {
+              // ForEach(this.recommendGoods, (item: GoodsItem) => {
+              LazyForEach(this.recommendDataSource, (item: GoodsItem) => {
                 FlowItem() {
                   Goods({ goodsItem: item })
                 }
