@@ -5,6 +5,7 @@ export struct Goods {
   @Param goodsItem: GoodsItem = {} as GoodsItem
   @Param smallImage: boolean = false
   build() {
+    this.GoodsComponent()
   }
   @Builder GoodsComponent() {
     Column({ space: 10 }) {

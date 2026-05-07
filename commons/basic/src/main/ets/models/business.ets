@@ -4,10 +4,11 @@
 export interface GoodsItem {
   id: string
   name: string
-  desc: string
+  desc?: string
   price: string
   picture: ResourceStr
-  orderNum: number // 已购数量
+  orderNum?: number // 已购数量
+  payCount?: number; // 猜喜特有
 }
 
 /**

@@ -1,5 +1,5 @@
 import { CategoryItem, GoodsItem, RequestRemoteCommunication } from "basic"
-import { Banner, HotRecommend } from "../models"
+import { Banner, HotRecommend, RecommendParams } from "../models"
 
 // 获取轮播图
 export const getBannerApi = () => {
@@ -29,4 +29,12 @@ export const getOneStopApi = () => {
 // 获取新鲜好物
 export const getHomePageNewApi = () => {
   return RequestRemoteCommunication.get<GoodsItem[]>("/home/new")
+}
+
+/**
+ * 获取猜喜
+ * @param params 请求入参
+ */
+export const getRecommendApi = (params: RecommendParams) => {
+  return RequestRemoteCommunication.get<GoodsItem[]>("/home/recommend", params)
 }

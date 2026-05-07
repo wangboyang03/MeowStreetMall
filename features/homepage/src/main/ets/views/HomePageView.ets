@@ -1,9 +1,8 @@
 import { AppBreakPoint, AppSafeArea, BreakPointEnum, BreakPointType, CategoryItem, GoodsItem } from "basic";
 import { DiscountGoods, Goods } from "../components";
 import { Banner, Params, DiscountType } from "../models";
-import { AppStorageV2 } from "@kit.ArkUI";
-import { getBannerApi, getCategoryApi, getHomePageNewApi, getHotRecommendApi, getInVogueApi,
-  getOneStopApi } from "../apis";
+import { AppStorageV2, promptAction } from "@kit.ArkUI";
+import { getBannerApi, getCategoryApi, getHomePageNewApi, getHotRecommendApi, getInVogueApi, getOneStopApi, getRecommendApi} from "../apis";
 
 @ComponentV2
 export struct HomePageView {
@@ -18,6 +17,10 @@ export struct HomePageView {
   safeAreaObject: AppSafeArea = AppStorageV2.connect(AppSafeArea, () => new AppSafeArea())! // 安全区避让对象
   @Local offsetY: number = 0 // 页面滚动距离
   @Local searchOpacity: number = 0 // 搜索框的透明度
+  @Local recommendPage: number = 1 // 请求猜喜的页码
+  @Local isReachLoad: boolean = false // 是否已经请求完成
+  @Local isFinished: boolean = false // 是否已经没有数据了
+
   /**
    * 获取接口数据
    */
@@ -44,8 +47,23 @@ export struct HomePageView {
     }
   }
 
+  /**
+   * 获取猜喜数据
+   */
+  async getRecommendData() {
+    this.recommendGoods = await getRecommendApi({ limit: 8 * this.recommendPage })
+    if (this.recommendGoods.length == this.recommendPage * 8) {
+      // 内容没有结束 还可以加载下一页
+      this.recommendPage++
+    } else {
+      this.isFinished = true // 加载完成了
+      promptAction.showToast({ message: '没有下一页了' })
+    }
+  }
+
   aboutToAppear(): void {
     this.getHomePageData() // 请求接口数据
+    this.getRecommendData() // 获取猜喜数据
   }
 
   build() {
@@ -225,7 +243,7 @@ export struct HomePageView {
             .borderRadius(8)
             .alignItems(HorizontalAlign.Start)
 
-            // 推荐商品
+            // 猜喜
             WaterFlow() {
               ForEach(this.recommendGoods, (item: GoodsItem) => {
                 FlowItem() {
@@ -236,7 +254,6 @@ export struct HomePageView {
             .columnsTemplate('1fr 1fr')
             .columnsGap(8)
             .rowsGap(10)
-
           }
           .padding({
             left: 8,
@@ -256,6 +273,14 @@ export struct HomePageView {
           this.searchOpacity = (this.offsetY - this.safeAreaObject.topHeight) / 40
         } else {
           this.searchOpacity = 1
+        }
+      })
+      .onReachEnd(async () => {
+        if (!this.isReachLoad && !this.isFinished) {
+          // 此时认为没有请求且还有数据
+          this.isReachLoad = true // 避免在请求中继续请求
+          await this.getRecommendData() // 等待请求数据
+          this.isReachLoad = false // 请求完成 便于下次请求
         }
       })
       // 搜索框元素

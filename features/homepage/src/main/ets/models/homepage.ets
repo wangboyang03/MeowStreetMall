@@ -39,3 +39,8 @@ export interface GoodsItems {
   pages: number;
   pageSize: number;
 }
+
+// 猜喜列表请求的参数类型
+export interface RecommendParams {
+  limit: number // 条数
+}
