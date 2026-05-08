@@ -1,14 +1,9 @@
-import { AppBreakPoint, AppSafeArea,
-  AppSharedData,
-  BreakPointEnum, BreakPointType, CategoryItem,
-  Constants,
-  GoodsItem, LazyForEachDataSource, LoadingComponent,
-  LoadingProgressComponent,
-  SoundPoolPlayer} from "basic";
+import { AppBreakPoint, AppSafeArea, AppSharedData, BreakPointEnum, BreakPointType, CategoryItem, Constants, GoodsItem, LazyForEachDataSource, LoadingComponent, LoadingProgressComponent, PAGE_PATH, SoundPoolPlayer} from "basic";
 import { DiscountGoods, Goods } from "../components";
 import { Banner, Params, DiscountType } from "../models";
 import { AppStorageV2, promptAction } from "@kit.ArkUI";
 import { getBannerApi, getCategoryApi, getHomePageNewApi, getHotRecommendApi, getInVogueApi, getOneStopApi, getRecommendApi} from "../apis";
+import { HMRouterMgr } from "@hadss/hmrouter";
 
 @ComponentV2
 export struct HomePageView {
@@ -133,6 +128,7 @@ export struct HomePageView {
                     .height(40)
                     .borderRadius(20)
                     .padding({ left: 12 })
+                    .onClick(() => HMRouterMgr.push({ pageUrl: PAGE_PATH.SEARCH_PAGE }))
                   }
                   .padding({ left: 16, right: 16, top: this.safeAreaObject.topHeight })
                 }

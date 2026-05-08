@@ -1,9 +1,10 @@
-import { AppBreakPoint, AppSafeArea, BreakPointType, TabItem } from 'basic'
+import { AppBreakPoint, AppSafeArea, BreakPointType, PAGE_PATH, TabItem } from 'basic'
 import { CartView } from 'cart'
 import { CategoryView } from 'category'
 import { HomePageView } from 'homepage'
 import { MineView } from 'mine'
-import { AppStorageV2 } from '@kit.ArkUI'
+import { AppStorageV2, AttributeUpdater } from '@kit.ArkUI'
+import { HMDefaultGlobalAnimator, HMNavigation } from '@hadss/hmrouter'
 
 @Entry
 @ComponentV2
@@ -17,45 +18,59 @@ struct Index {
     { text: '购物袋', normal: $r('app.media.ic_public_cart_normal'), active: $r('app.media.ic_public_cart_active') },
     { text: '我的', normal: $r('app.media.ic_public_my_normal'), active: $r('app.media.ic_public_my_active') },
   ]
+  modifierObject: MyModifier = new MyModifier() // 修改Navigation特性对象实例
 
   build() {
-    Tabs({ barPosition: new BreakPointType({
-      sm: BarPosition.End,
-      md: BarPosition.End,
-      lg: BarPosition.Start,
-    }).getValue(this.breakObject?.breakPoint), index: $$this.activeIndex }) {
-      ForEach(this.list, (item: TabItem, index: number) => {
-        TabContent() {
-          if (index == 0) {
-            HomePageView()
-          } else if (index == 1) {
-            CategoryView()
-          } else if (index == 2) {
-            CartView()
-          } else if (index == 3) {
-            MineView()
-          }
+    Column() {
+      HMNavigation({
+        navigationId: PAGE_PATH.MAIN_PAGE_ID,
+        homePageUrl: PAGE_PATH.MAIN_PAGE,
+        options: {
+          standardAnimator: HMDefaultGlobalAnimator.STANDARD_ANIMATOR,
+          dialogAnimator: HMDefaultGlobalAnimator.DIALOG_ANIMATOR,
+          modifier: this.modifierObject
         }
-        .tabBar(this.getTabItemBuilder(item, index))
-      })
+      }) {
+        Tabs({ barPosition: new BreakPointType({
+          sm: BarPosition.End,
+          md: BarPosition.End,
+          lg: BarPosition.Start,
+        }).getValue(this.breakObject?.breakPoint), index: $$this.activeIndex }) {
+          ForEach(this.list, (item: TabItem, index: number) => {
+            TabContent() {
+              if (index == 0) {
+                HomePageView()
+              } else if (index == 1) {
+                CategoryView()
+              } else if (index == 2) {
+                CartView()
+              } else if (index == 3) {
+                MineView()
+              }
+            }
+            .tabBar(this.getTabItemBuilder(item, index))
+          })
+        }
+        .barHeight(new BreakPointType({
+          sm: 60,
+          md: 60,
+          lg: 120
+        }).getValue(this.breakObject?.breakPoint))
+        .vertical(new BreakPointType({
+          sm: false,
+          md: false,
+          lg: true
+        }).getValue(this.breakObject?.breakPoint))
+        .scrollable(false) // 阻止滚动切换
+        .animationDuration(new BreakPointType({
+          sm: 300,
+          md: 300,
+          lg: 0
+        }).getValue(this.breakObject.breakPoint)) // 阻止切换动画
+        .padding({ bottom: this.safeAreaObject.bottomHeight })
+      }
     }
-    .barHeight(new BreakPointType({
-      sm: 60,
-      md: 60,
-      lg: 120
-    }).getValue(this.breakObject?.breakPoint))
-    .vertical(new BreakPointType({
-      sm: false,
-      md: false,
-      lg: true
-    }).getValue(this.breakObject?.breakPoint))
-    .scrollable(false) // 阻止滚动切换
-    .animationDuration(new BreakPointType({
-      sm: 300,
-      md: 300,
-      lg: 0
-    }).getValue(this.breakObject.breakPoint)) // 阻止切换动画
-    .padding({ bottom: this.safeAreaObject.bottomHeight })
+
   }
 
   /**
@@ -75,5 +90,13 @@ struct Index {
     }
     .justifyContent(FlexAlign.SpaceEvenly)
     .height(50)
+  }
+}
+
+class MyModifier extends AttributeUpdater<NavigationAttribute> {
+  initializeModifier(sInstance: NavigationAttribute) {
+    sInstance.mode(NavigationMode.Stack) // 非分栏模式
+    sInstance.titleMode(NavigationTitleMode.Mini) // 全屏标题模式
+    sInstance.hideTitleBar(true) // 隐藏标题栏
   }
 }

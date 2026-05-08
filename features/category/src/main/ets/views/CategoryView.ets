@@ -1,7 +1,6 @@
-import { AppBreakPoint, AppSafeArea, AppSharedData,
-  BreakPointType,
-  CategoryItem, CategoryItemChild, NavigationBar } from "basic"
+import { AppBreakPoint, AppSafeArea, AppSharedData, BreakPointType, CategoryItem, CategoryItemChild, NavigationBar, PAGE_PATH } from "basic"
 import { AppStorageV2 } from "@kit.ArkUI"
+import { HMRouterMgr } from "@hadss/hmrouter"
 
 @ComponentV2
 export struct CategoryView {
@@ -15,8 +14,8 @@ export struct CategoryView {
       NavigationBar({
         title: '分类',
         showRightIcon: true,
-        rightIcon: $r('[basic].media.ic_public_search')
-      })
+        rightIcon: $r('[basic].media.ic_public_search'),
+        onRightClick: () => HMRouterMgr.push({ pageUrl: PAGE_PATH.SEARCH_PAGE })}).border({ width: { bottom: 0.5 }, color: $r('[basic].color.under') })
       Row() {
         // 左边分类栏
         Column() {
