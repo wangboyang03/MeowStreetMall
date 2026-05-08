@@ -19,6 +19,7 @@ export struct NavigationBar {
     RelativeContainer() {
       if (this.showLeftIcon) {
         Image(this.leftIcon)
+          .draggable(false)
           .fillColor(this.color)
           .width(18)
           .aspectRatio(1)
@@ -34,6 +35,7 @@ export struct NavigationBar {
       }
       if (this.showRightIcon) {
         Image(this.rightIcon)
+          .draggable(false)
           .width(18)
           .aspectRatio(1)
           .fillColor(this.color)

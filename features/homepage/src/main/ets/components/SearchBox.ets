@@ -11,6 +11,7 @@ export struct SearchBox {
   build() {
     Row() {
       Image($r('[basic].media.ic_public_left'))
+        .draggable(false)
         .width(24)
         .aspectRatio(1)
         .fillColor($r('[basic].color.white'))

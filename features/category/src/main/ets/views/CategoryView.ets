@@ -39,6 +39,7 @@ export struct CategoryView {
           Column() {
             // 顶部图片
             Image(this.appSharedData.category[this.activeIndex]?.picture)
+              .draggable(false)
               .width('100%')
               .height(new BreakPointType({
                 sm: 136,
@@ -58,6 +59,7 @@ export struct CategoryView {
                 GridCol() {
                   Column() {
                     Image(object?.item?.picture)
+                      .draggable(false)
                       .width(64)
                       .aspectRatio(1)
                     Text(object?.item?.name)

@@ -46,15 +46,20 @@ export struct SearchResultPageView {
     }
   }
 
+  /**
+   * 重刷数据
+   */
+  refreshData() {
+    this.searchParams.page = 1
+    this.searchResultList = [] // 置空便于刷新数据
+    this.loadFinished = false
+    this.getSearchResult()
+  }
+
   build() {
     Column() {
       // searchBox
-      SearchBox({ keyword: this.searchParams?.keyword, onSearchSubmit: (value: string) => {
-        this.searchParams.page = 1
-        this.searchResultList = [] // 置空便于刷新数据
-        this.loadFinished = false
-        this.getSearchResult()
-      }})
+      SearchBox({ keyword: this.searchParams?.keyword, onSearchSubmit: (value: string): void => this.refreshData()})
 
       // list
       Row() {
@@ -65,6 +70,9 @@ export struct SearchResultPageView {
             sortField: this.searchParams.sortField,
             sortMethod: this.searchParams.sortMethod,
             onSortChange: (field: SortField, method: SortMethod) => {
+              this.searchParams.sortField = field // 相当于重新加载数据 排序字段
+              this.searchParams.sortMethod = method // 排序方式
+              this.refreshData()
             }
           })
         })

@@ -16,16 +16,24 @@ export struct SearchSortItem {
         .fontColor(this.sortField == this.field ? $r('[basic].color.black') : $r('[basic].color.gray'))
       Column() {
         Image($r('[basic].media.ic_public_up'))
+          .draggable(false)
           .width(15)
           .height(6)
           .fillColor(this.sortField == this.field && this.sortMethod == 'asc' ? $r('[basic].color.black') : $r('[basic].color.gray'))
         Image($r('[basic].media.ic_public_down'))
+          .draggable(false)
           .width(15)
           .height(6)
           .fillColor(this.sortField == this.field && this.sortMethod == 'desc' ? $r('[basic].color.black') : $r('[basic].color.gray'))
       }
       .justifyContent(FlexAlign.Center)
     }
-    .onClick(() => {})
+    .onClick(() => {
+      if (this.field == this.sortField) {
+        this.onSortChange(this.field, this.sortMethod == "asc" ? "desc" : 'asc')
+      } else {
+        this.onSortChange(this.field, "desc") // 字段不一致 按照默认排序展示
+      }
+    })
   }
 }
