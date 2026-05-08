@@ -1,4 +1,8 @@
-import { AppBreakPoint, AppSafeArea, BreakPointEnum, BreakPointType, CategoryItem, GoodsItem, LazyForEachDataSource, LoadingComponent } from "basic";
+import { AppBreakPoint, AppSafeArea, BreakPointEnum, BreakPointType, CategoryItem,
+  Constants,
+  GoodsItem, LazyForEachDataSource, LoadingComponent,
+  LoadingProgressComponent,
+  SoundPoolPlayer} from "basic";
 import { DiscountGoods, Goods } from "../components";
 import { Banner, Params, DiscountType } from "../models";
 import { AppStorageV2, promptAction } from "@kit.ArkUI";
@@ -22,12 +26,14 @@ export struct HomePageView {
   @Local isFinished: boolean = false // 是否已经没有数据了
   recommendDataSource: LazyForEachDataSource<GoodsItem> = new LazyForEachDataSource() // 实例化猜喜LazyForEach数据源
   @Local loadingView: boolean = false // 页面正在加载中
+  @Local isRefreshing: boolean = false // 是否正在刷新
+  @Local refreshStatus: RefreshStatus = RefreshStatus.Inactive // 记录当前下拉的状态
 
   /**
    * 获取接口数据
    */
-  async getHomePageData() {
-    this.loadingView = true // 显示loading
+  async getHomePageData(firstLoading?: boolean) {
+    this.loadingView = !!firstLoading // 显示loading
     /** 获取到数据一次性渲染 创建一个微队列 无论成功还是失败 等待所有执行完毕 **/
     const homePageData = await Promise.allSettled([getBannerApi(), getCategoryApi(), getHotRecommendApi(), getInVogueApi(), getOneStopApi(), getHomePageNewApi()])
     if (homePageData[0].status == "fulfilled") {
@@ -67,7 +73,8 @@ export struct HomePageView {
   }
 
   aboutToAppear(): void {
-    this.getHomePageData() // 请求接口数据
+    this.getHomePageData(true) // 请求接口数据
+    this.getRecommendData()
   }
 
   build() {
@@ -75,250 +82,263 @@ export struct HomePageView {
       if (this.loadingView) {
         LoadingComponent()
       } else {
-        Scroll() {
+        Refresh({ refreshing: $$this.isRefreshing, builder: this.refreshHeader }) {
           Column() {
-            // 轮播图+搜索
-            Stack({ alignContent: Alignment.Top }) {
-              Swiper() {
-                ForEach(this.banners, (item: Banner) => {
-                  Image(item.imgUrl).draggable(false)
-                })
-              }
-              .displayCount(new BreakPointType({
-                sm: 1,
-                md: 2,
-                lg: 3
-              }).getValue(this.breakObject.breakPoint)) // 设置Swiper视窗内元素显示个数
-              .itemSpace(new BreakPointType({
-                sm: 0,
-                md: 10,
-                lg: 20
-              }).getValue(this.breakObject.breakPoint)) // 轮播图视窗内元素间距
-              .indicator(
-                this.breakObject.breakPoint == BreakPointEnum.SM ? DotIndicator.dot()
-                  .itemWidth(8)
-                  .itemHeight(4)
-                  .color('#33191919')
-                  .selectedItemWidth(24)
-                  .selectedItemHeight(4)
-                  .selectedColor('#191919') : false
-              ) // 轮播图指示器
-
-              Row() {
-                Row({ space: 4 }) {
-                  Image($r('[basic].media.ic_public_search'))
-                    .draggable(false)
-                    .width(16)
-                    .height(16)
-                    .fillColor($r('[basic].color.white'))
-                  Text('搜索...')
-                    .fontSize(14)
-                    .fontColor($r('[basic].color.white'))
-                }
-                .backgroundColor('#33191919')
-                .width('100%')
-                .height(40)
-                .borderRadius(20)
-                .padding({ left: 12 })
-              }
-              .padding({ left: 16, right: 16, top: this.safeAreaObject.topHeight })
-            }
-            .width('100%')
-
-
-            // 分类
-            Column({ space: 10 }) {
-              // 分类
-              List({ space: new BreakPointType({
-                sm: 14,
-                md: 36,
-                lg: 72
-              }).getValue(this.breakObject.breakPoint) }) {
-                ForEach(this.categories, (item: CategoryItem) => {
-                  ListItem() {
-                    Column() {
-                      Image(item.picture)
-                        .draggable(false)
-                        .width(56)
-                        .aspectRatio(1)
-                      Text(item.name)
-                        .fontSize(10)
-                        .fontColor('#CC191919')
-                    }
-                    .width(60)
-                    .height(80)
-                    .borderRadius(30)
-
-                    .clip(true)
-                    .backgroundImage(item.picture)
-                    .backgroundImageSize(ImageSize.Contain)
-                    .backgroundImagePosition(Alignment.Center)
-                    .backgroundBlurStyle(
-                      BlurStyle.BACKGROUND_ULTRA_THICK,
-                      { scale: 0.25 }
-                    )
+            Scroll() {
+              Column() {
+                // 轮播图+搜索
+                Stack({ alignContent: Alignment.Top }) {
+                  Swiper() {
+                    ForEach(this.banners, (item: Banner) => {
+                      Image(item.imgUrl).draggable(false)
+                    })
                   }
-                })
-              }
-              .width('100%')
-              .height(92)
-              .scrollBar(BarState.Off)
-              .listDirection(Axis.Horizontal)
-              .alignListItem(ListItemAlign.Center)
+                  .displayCount(new BreakPointType({
+                    sm: 1,
+                    md: 2,
+                    lg: 3
+                  }).getValue(this.breakObject.breakPoint)) // 设置Swiper视窗内元素显示个数
+                  .itemSpace(new BreakPointType({
+                    sm: 0,
+                    md: 10,
+                    lg: 20
+                  }).getValue(this.breakObject.breakPoint)) // 轮播图视窗内元素间距
+                  .indicator(
+                    this.breakObject.breakPoint == BreakPointEnum.SM ? DotIndicator.dot()
+                      .itemWidth(8)
+                      .itemHeight(4)
+                      .color('#33191919')
+                      .selectedItemWidth(24)
+                      .selectedItemHeight(4)
+                      .selectedColor('#191919') : false
+                  ) // 轮播图指示器
 
-              // 特惠推荐
-              Column({ space: 10 }) {
-                Image($r('app.media.home_cmd_title'))
-                  .draggable(false)
-                  .width(150)
-                  .height(20)
-                Row() {
-                  Image($r('app.media.home_cmd_inner'))
-                    .draggable(false)
-                    .width(86)
-                    .height(116)
-                  List({ space: 10 }) {
-                    ForEach(this.saleGoods, (item: GoodsItem) => {
+                  Row() {
+                    Row({ space: 4 }) {
+                      Image($r('[basic].media.ic_public_search'))
+                        .draggable(false)
+                        .width(16)
+                        .height(16)
+                        .fillColor($r('[basic].color.white'))
+                      Text('搜索...')
+                        .fontSize(14)
+                        .fontColor($r('[basic].color.white'))
+                    }
+                    .backgroundColor('#33191919')
+                    .width('100%')
+                    .height(40)
+                    .borderRadius(20)
+                    .padding({ left: 12 })
+                  }
+                  .padding({ left: 16, right: 16, top: this.safeAreaObject.topHeight })
+                }
+                .width('100%')
+
+
+                // 分类
+                Column({ space: 10 }) {
+                  // 分类
+                  List({ space: new BreakPointType({
+                    sm: 14,
+                    md: 36,
+                    lg: 72
+                  }).getValue(this.breakObject.breakPoint) }) {
+                    ForEach(this.categories, (item: CategoryItem) => {
                       ListItem() {
-                        DiscountGoods({ goodsItem: item })
+                        Column() {
+                          Image(item.picture)
+                            .draggable(false)
+                            .width(56)
+                            .aspectRatio(1)
+                          Text(item.name)
+                            .fontSize(10)
+                            .fontColor('#CC191919')
+                        }
+                        .width(60)
+                        .height(80)
+                        .borderRadius(30)
+
+                        .clip(true)
+                        .backgroundImage(item.picture)
+                        .backgroundImageSize(ImageSize.Contain)
+                        .backgroundImagePosition(Alignment.Center)
+                        .backgroundBlurStyle(
+                          BlurStyle.BACKGROUND_ULTRA_THICK,
+                          { scale: 0.25 }
+                        )
                       }
                     })
                   }
-                  .layoutWeight(1)
                   .width('100%')
-                  .height(116)
-                  .backgroundColor($r('[basic].color.white'))
-                  .borderRadius({
-                    topRight: 8,
-                    bottomRight: 8
-                  })
-                  .padding({ right: 10, left: 10 })
+                  .height(92)
                   .scrollBar(BarState.Off)
                   .listDirection(Axis.Horizontal)
-                }
-              }
-              .width('100%')
-              .height(166)
-              .backgroundImage($r('app.media.home_cmd_sm'))
-              .backgroundImageSize(ImageSize.Cover)
-              .borderRadius(8)
-              .padding(10)
-              .alignItems(HorizontalAlign.Start)
+                  .alignListItem(ListItemAlign.Center)
 
-              // 爆款推荐+一站买全
-              Row({ space: 10 }) {
-                this.DiscountBuilder({
-                  title: '爆款推荐',
-                  subTitle: '最受欢迎',
-                  bg: '#EDF1FB',
-                  list: this.hotGoods
-                })
-                this.DiscountBuilder({
-                  title: '一站买全',
-                  subTitle: '精心优选',
-                  bg: '#FCF6EA',
-                  list: this.oneGoods
-                })
-              }
-
-              // 新鲜好物
-              Column({ space: new BreakPointType({
-                sm: 14,
-                md: 36,
-                lg: 72
-              }).getValue(this.breakObject.breakPoint) }) {
-                Image($r('app.media.home_new'))
-                  .draggable(false)
-                  .width(146)
-                  .height(19)
-                List({ space: 10 }) {
-                  ForEach(this.newGoods, (item: GoodsItem) => {
-                    ListItem() {
-                      DiscountGoods({ type: DiscountType.NEW, goodsItem: item })
+                  // 特惠推荐
+                  Column({ space: 10 }) {
+                    Image($r('app.media.home_cmd_title'))
+                      .draggable(false)
+                      .width(150)
+                      .height(20)
+                    Row() {
+                      Image($r('app.media.home_cmd_inner'))
+                        .draggable(false)
+                        .width(86)
+                        .height(116)
+                      List({ space: 10 }) {
+                        ForEach(this.saleGoods, (item: GoodsItem) => {
+                          ListItem() {
+                            DiscountGoods({ goodsItem: item })
+                          }
+                        })
+                      }
+                      .layoutWeight(1)
+                      .width('100%')
+                      .height(116)
+                      .backgroundColor($r('[basic].color.white'))
+                      .borderRadius({
+                        topRight: 8,
+                        bottomRight: 8
+                      })
+                      .padding({ right: 10, left: 10 })
+                      .scrollBar(BarState.Off)
+                      .listDirection(Axis.Horizontal)
                     }
-                  })
-                }
-                .width('100%')
-                .height(116)
-                .scrollBar(BarState.Off)
-                .listDirection(Axis.Horizontal)
-              }
-              .width('100%')
-              .height(156)
-              .padding(10)
-              .backgroundColor('#F7EFF5')
-              .borderRadius(8)
-              .alignItems(HorizontalAlign.Start)
-
-              // 猜喜
-              WaterFlow() {
-                // ForEach(this.recommendGoods, (item: GoodsItem) => {
-                LazyForEach(this.recommendDataSource, (item: GoodsItem) => {
-                  FlowItem() {
-                    Goods({ goodsItem: item })
                   }
+                  .width('100%')
+                  .height(166)
+                  .backgroundImage($r('app.media.home_cmd_sm'))
+                  .backgroundImageSize(ImageSize.Cover)
+                  .borderRadius(8)
+                  .padding(10)
+                  .alignItems(HorizontalAlign.Start)
+
+                  // 爆款推荐+一站买全
+                  Row({ space: 10 }) {
+                    this.DiscountBuilder({
+                      title: '爆款推荐',
+                      subTitle: '最受欢迎',
+                      bg: '#EDF1FB',
+                      list: this.hotGoods
+                    })
+                    this.DiscountBuilder({
+                      title: '一站买全',
+                      subTitle: '精心优选',
+                      bg: '#FCF6EA',
+                      list: this.oneGoods
+                    })
+                  }
+
+                  // 新鲜好物
+                  Column({ space: new BreakPointType({
+                    sm: 14,
+                    md: 36,
+                    lg: 72
+                  }).getValue(this.breakObject.breakPoint) }) {
+                    Image($r('app.media.home_new'))
+                      .draggable(false)
+                      .width(146)
+                      .height(19)
+                    List({ space: 10 }) {
+                      ForEach(this.newGoods, (item: GoodsItem) => {
+                        ListItem() {
+                          DiscountGoods({ type: DiscountType.NEW, goodsItem: item })
+                        }
+                      })
+                    }
+                    .width('100%')
+                    .height(116)
+                    .scrollBar(BarState.Off)
+                    .listDirection(Axis.Horizontal)
+                  }
+                  .width('100%')
+                  .height(156)
+                  .padding(10)
+                  .backgroundColor('#F7EFF5')
+                  .borderRadius(8)
+                  .alignItems(HorizontalAlign.Start)
+
+                  // 猜喜
+                  WaterFlow() {
+                    // ForEach(this.recommendGoods, (item: GoodsItem) => {
+                    LazyForEach(this.recommendDataSource, (item: GoodsItem) => {
+                      FlowItem() {
+                        Goods({ goodsItem: item })
+                      }
+                    })
+                  }
+                  .columnsTemplate('1fr 1fr')
+                  .columnsGap(8)
+                  .rowsGap(10)
+                }
+                .padding({
+                  left: 8,
+                  right: 8,
+                  bottom: 10,
+                  top: 10
                 })
               }
-              .columnsTemplate('1fr 1fr')
-              .columnsGap(8)
-              .rowsGap(10)
             }
+            .scrollBar(BarState.Off)
+            .onDidScroll((_: number, offsetY: number) => {
+              this.offsetY += offsetY // 计算总共往上移动的距离
+              if (this.offsetY < this.safeAreaObject.topHeight) {
+                this.searchOpacity = 0
+                // 40搜索框的高度
+              } else if (this.offsetY > this.safeAreaObject.topHeight && this.offsetY < (this.safeAreaObject.topHeight + 40)) {
+                this.searchOpacity = (this.offsetY - this.safeAreaObject.topHeight) / 40
+              } else {
+                this.searchOpacity = 1
+              }
+            })
+            .onReachEnd(async () => {
+              if (!this.isReachLoad && !this.isFinished) {
+                // 此时认为没有请求且还有数据
+                this.isReachLoad = true // 避免在请求中继续请求
+                await this.getRecommendData() // 等待请求数据
+                this.isReachLoad = false // 请求完成 便于下次请求
+              }
+            })
+            // 搜索框元素
+            Row() {
+              Row({ space: 4 }) {
+                Image($r('[basic].media.ic_public_search'))
+                  .draggable(false)
+                  .width(16)
+                  .height(16)
+                  .fillColor($r('[basic].color.white'))
+                Text('搜索...')
+                  .fontSize(14)
+                  .fontColor($r('[basic].color.white'))
+              }
+              .backgroundColor('#33999797')
+              .width('100%')
+              .height(40)
+              .borderRadius(20)
+              .padding({ left: 12 })
+            }
+            .opacity(this.searchOpacity)
             .padding({
-              left: 8,
-              right: 8,
-              bottom: 10,
-              top: 10
+              left: 16,
+              right: 16,
+              top: this.safeAreaObject.topHeight,
+              bottom: this.safeAreaObject.topHeight,
+            })
+            .linearGradient({
+              direction: GradientDirection.Bottom,
+              colors: [["#ff949dec", 0], ["#fff", 1]]
             })
           }
         }
-        .scrollBar(BarState.Off)
-        .onDidScroll((_: number, offsetY: number) => {
-          this.offsetY += offsetY // 计算总共往上移动的距离
-          if (this.offsetY < this.safeAreaObject.topHeight) {
-            this.searchOpacity = 0
-            // 40搜索框的高度
-          } else if (this.offsetY > this.safeAreaObject.topHeight && this.offsetY < (this.safeAreaObject.topHeight + 40)) {
-            this.searchOpacity = (this.offsetY - this.safeAreaObject.topHeight) / 40
-          } else {
-            this.searchOpacity = 1
+        .onStateChange(async (state) => {
+          this.refreshStatus = state
+          if (this.refreshStatus == RefreshStatus.Refresh) {
+            // 此时完成下拉刷新
+            await this.onRefresh()
+            this.isRefreshing = false
+            SoundPoolPlayer.getInstance().play(Constants.TIP_SOUND) // 刷新完成播放提示音
           }
-        })
-        .onReachEnd(async () => {
-          if (!this.isReachLoad && !this.isFinished) {
-            // 此时认为没有请求且还有数据
-            this.isReachLoad = true // 避免在请求中继续请求
-            await this.getRecommendData() // 等待请求数据
-            this.isReachLoad = false // 请求完成 便于下次请求
-          }
-        })
-        // 搜索框元素
-        Row() {
-          Row({ space: 4 }) {
-            Image($r('[basic].media.ic_public_search'))
-              .draggable(false)
-              .width(16)
-              .height(16)
-              .fillColor($r('[basic].color.white'))
-            Text('搜索...')
-              .fontSize(14)
-              .fontColor($r('[basic].color.white'))
-          }
-          .backgroundColor('#33999797')
-          .width('100%')
-          .height(40)
-          .borderRadius(20)
-          .padding({ left: 12 })
-        }
-        .opacity(this.searchOpacity)
-        .padding({
-          left: 16,
-          right: 16,
-          top: this.safeAreaObject.topHeight,
-          bottom: this.safeAreaObject.topHeight,
-        })
-        .linearGradient({
-          direction: GradientDirection.Bottom,
-          colors: [["#ff949dec", 0], ["#fff", 1]]
         })
       }
     }
@@ -354,5 +374,37 @@ export struct HomePageView {
     .padding(10)
     .backgroundColor(params.bg)
     .borderRadius(8)
+  }
+
+  @Builder refreshHeader() {
+    Row({ space: 10 }) {
+      Text(this.DisplayText).fontSize(12)
+      LoadingProgressComponent({ progressWidth: 20, strokeWidth: 2 })
+    }
+    .width("100%")
+    .height(180)
+    .justifyContent(FlexAlign.Center)
+  }
+
+  @Computed get DisplayText() {
+    switch (this.refreshStatus) {
+      case RefreshStatus.Drag:
+        return "下拉刷新"
+      case RefreshStatus.OverDrag:
+        return "松手刷新"
+      case RefreshStatus.Refresh:
+        return "刷新中"
+      case RefreshStatus.Done:
+        return "刷新完成"
+      default:
+        return ""
+    }
+  }
+
+  async onRefresh() {
+    this.recommendPage = 1
+    this.isFinished = false // 回归到开始阶段
+    await this.getHomePageData()
+    await this.getRecommendData()
   }
 }
