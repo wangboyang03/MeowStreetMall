@@ -30,3 +30,20 @@ export interface CategoryItem {
   name: string
   picture: ResourceStr
 }
+
+// 猜喜的参数
+export interface GuessParams {
+  page: number
+  pageSize: number
+}
+
+/**
+ * 搜索和猜喜返回的类型
+ */
+export interface SingleGoodsItem {
+  counts: number;
+  items: GoodsItem[];
+  page: number;
+  pages: number;
+  pageSize: number;
+}

@@ -13,6 +13,9 @@ class RequestInterceptor implements rcp.Interceptor {
    */
   intercept(context: rcp.RequestContext, next: rcp.RequestHandler): Promise<rcp.Response> {
     // TODO: to from next axios返回类型无法更改 请求拦截器 注入Token
+    if (typeof context.request.content == 'object') {
+      context.request.content = JSON.parse(JSON.stringify(context.request.content).replace(/__ob_/g, "")) as rcp.RequestContent
+    }
     return next.handle(context);
   }
 }

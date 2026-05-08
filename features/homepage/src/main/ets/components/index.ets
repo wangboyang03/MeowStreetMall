@@ -1,2 +1,4 @@
 export * from './DiscountGoods'
 export * from './Goods'
+export * from './SearchBox'
+export * from './SearchSortItem'
