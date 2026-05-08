@@ -1,4 +1,4 @@
-import { AppBreakPoint, AppSafeArea, CategoryItem, CategoryItemChild } from "basic"
+import { AppBreakPoint, AppSafeArea, AppSharedData, CategoryItem, CategoryItemChild, NavigationBar } from "basic"
 import { AppStorageV2 } from "@kit.ArkUI"
 
 @ComponentV2
@@ -6,18 +6,19 @@ export struct CategoryView {
   @Local activeIndex: number = 0 // 默认渲染第一项
   breakObject:AppBreakPoint = AppStorageV2.connect(AppBreakPoint, ()=> new AppBreakPoint())! // 断点对象
   safeAreaObject: AppSafeArea = AppStorageV2.connect(AppSafeArea, () => new AppSafeArea())! // 安全区避让对象
-  categoryItems: CategoryItem[] = new Array(10).fill({
-    id: "1181622001",
-    name: "气质女装",
-    picture: "https://yjy-teach-oss.oss-cn-beijing.aliyuncs.com/meikou/c1/qznz.png"
-  }) // 分类项
+  appSharedData: AppSharedData = AppStorageV2.connect(AppSharedData, () => new AppSharedData())! // 共享数据对象
 
   build() {
     Column() {
+      NavigationBar({
+        title: '分类',
+        showRightIcon: true,
+        rightIcon: $r('[basic].media.ic_public_search')
+      })
       Row() {
         // 左边分类栏
         Column() {
-          Repeat<CategoryItem>(this.categoryItems).each((object: RepeatItem<CategoryItem>)=> {
+          Repeat<CategoryItem>(this.appSharedData.category).each((object: RepeatItem<CategoryItem>)=> {
             Text(object.item.name)// 文本
               .backgroundColor(this.activeIndex == object.index ? $r('[basic].color.black') : $r('[basic].color.white'))
               .fontSize(14)
@@ -35,7 +36,8 @@ export struct CategoryView {
 
         Scroll() {
           Column() {
-            Image('https://yjy-teach-oss.oss-cn-beijing.aliyuncs.com/meikou/c1/qznz.png') // 顶图
+            // 顶部图片
+            Image(this.appSharedData.category[this.activeIndex]?.picture)
               .width('100%')
               .height(136)
               .objectFit(ImageFit.Contain)
@@ -43,13 +45,13 @@ export struct CategoryView {
               .borderRadius(8)
               .margin({ bottom: 8 })
             GridRow({ columns: 2, gutter: 8 }) {
-              ForEach(Array.from({ length: 10 }), (sub: CategoryItemChild) => {
+              Repeat<CategoryItemChild>(this.appSharedData.category[this.activeIndex]?.children ?? []).each((object: RepeatItem<CategoryItemChild>) => {
                 GridCol() {
                   Column() {
-                    Image('https://yjy-teach-oss.oss-cn-beijing.aliyuncs.com/meikou/c2/qznz_bq.png?quality=95&imageView')
+                    Image(object?.item?.picture)
                       .width(64)
                       .aspectRatio(1)
-                    Text('半裙')
+                    Text(object?.item?.name)
                       .fontSize(14)
                       .fontColor($r('[basic].color.text'))
                       .margin({ top: 8 })
@@ -74,8 +76,5 @@ export struct CategoryView {
     }
     .width('100%')
     .height('100%')
-    .padding({
-      top: this.safeAreaObject.topHeight
-    })
   }
 }

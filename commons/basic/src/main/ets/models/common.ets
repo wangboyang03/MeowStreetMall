@@ -1,3 +1,4 @@
+import { CategoryItem } from ".";
 import { BreakPointEnum } from "./breakPoint";
 
 @ObservedV2
@@ -15,4 +16,10 @@ export interface ResponseData<T> {
   code: string
   message: string
   result: T
+}
+
+// 存储应用间共享数据
+@ObservedV2
+export class AppSharedData {
+  @Trace category: CategoryItem[] = [] // 分类列表
 }

@@ -1,4 +1,6 @@
-import { AppBreakPoint, AppSafeArea, BreakPointEnum, BreakPointType, CategoryItem,
+import { AppBreakPoint, AppSafeArea,
+  AppSharedData,
+  BreakPointEnum, BreakPointType, CategoryItem,
   Constants,
   GoodsItem, LazyForEachDataSource, LoadingComponent,
   LoadingProgressComponent,
@@ -41,6 +43,8 @@ export struct HomePageView {
     }
     if (homePageData[1].status == "fulfilled") {
       this.categories = homePageData[1].value
+      const appSharedData = AppStorageV2.connect(AppSharedData, () => new AppSharedData())!
+      appSharedData.category = homePageData[1].value // 将获取到的分类数据送给随机存取存储器
     }
     if (homePageData[2].status == "fulfilled") {
       this.saleGoods = homePageData[2].value?.subTypes?.[0]?.goodsItems?.items ?? []
