@@ -1,4 +1,6 @@
-import { AppBreakPoint, AppSafeArea, AppSharedData, CategoryItem, CategoryItemChild, NavigationBar } from "basic"
+import { AppBreakPoint, AppSafeArea, AppSharedData,
+  BreakPointType,
+  CategoryItem, CategoryItemChild, NavigationBar } from "basic"
 import { AppStorageV2 } from "@kit.ArkUI"
 
 @ComponentV2
@@ -39,12 +41,20 @@ export struct CategoryView {
             // 顶部图片
             Image(this.appSharedData.category[this.activeIndex]?.picture)
               .width('100%')
-              .height(136)
+              .height(new BreakPointType({
+                sm: 136,
+                md: 316,
+                lg: 316
+              }).getValue(this.breakObject.breakPoint))
               .objectFit(ImageFit.Contain)
               .backgroundColor('#F6F6F6')
               .borderRadius(8)
               .margin({ bottom: 8 })
-            GridRow({ columns: 2, gutter: 8 }) {
+            GridRow({ columns: {
+              sm: 2,
+              md: 4,
+              lg: 4
+            }, gutter: 8 }) {
               Repeat<CategoryItemChild>(this.appSharedData.category[this.activeIndex]?.children ?? []).each((object: RepeatItem<CategoryItemChild>) => {
                 GridCol() {
                   Column() {
