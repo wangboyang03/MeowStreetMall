@@ -12,6 +12,7 @@ export struct Goods {
       if (this.smallImage) {
         Row() {
           Image(this.goodsItem.picture)
+            .alt($r('[basic].media.ic_public_empty'))
             .draggable(false)
             .width('100%')
             .aspectRatio(1)
@@ -20,6 +21,7 @@ export struct Goods {
         .padding(20)
       } else {
         Image(this.goodsItem.picture)
+          .alt($r('[basic].media.ic_public_empty'))
           .draggable(false)
           .width('100%')
           .aspectRatio(1)
