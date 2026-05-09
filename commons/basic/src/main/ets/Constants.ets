@@ -16,7 +16,7 @@ export class PAGE_PATH {
  * 声音状态枚举
  */
 export enum VoiceState {
-  DEFAULT,
-  VOICING,
-  VOICEOVER
+  DEFAULT, // 没有激活状态
+  VOICING, // 正在录音
+  VOICEOVER // 錄音結束
 }

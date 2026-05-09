@@ -15,8 +15,8 @@ export struct AudioSearch {
       // promptAction.showToast({ message: '可以开始录音了' })
       this.voiceState = VoiceState.VOICING
       await CoreSpeechManager.getInstance().initEngine((content) => this.keyword = content) // 初始化识别引擎
-      AudioCapturerManager.getInstance().start((buffer)=>{
-        CoreSpeechManager.getInstance().startTransVoice(buffer) // 将buffer源传给识别引擎
+      AudioCapturerManager.getInstance().start((buffer) => {
+        if (!!buffer) CoreSpeechManager.getInstance().startTransVoice(buffer) // 将buffer源传给识别引擎
       })
     }, () => {
       promptAction.showToast({ message: '无权限' })
@@ -32,6 +32,15 @@ export struct AudioSearch {
     this.voiceState = VoiceState.DEFAULT // 置为初始状态
     await AudioCapturerManager.getInstance().stop() // 停止录音
     CoreSpeechManager.getInstance().stopTransVoice() // 停止识别
+  }
+
+  // 識別按鈕寬度計算
+  @Computed get buttonWidth() {
+    if (this.voiceState == VoiceState.DEFAULT) {
+      return 150
+    } else {
+      return 200
+    }
   }
 
   build() {
@@ -80,7 +89,12 @@ export struct AudioSearch {
         }
       }
       .padding({ left: 12, right: 12 })
-      .height(36)
+      .width(this.buttonWidth)
+      .aspectRatio(4)
+      .animation({
+        duration: 100,
+        iterations: 1
+      })
       .linearGradient({
         angle: 135,
         colors: [[$r('[basic].color.linear_begin'), 0], [$r('[basic].color.linear_end'), 1]]
