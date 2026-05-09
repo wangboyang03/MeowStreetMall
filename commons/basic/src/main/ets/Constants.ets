@@ -11,3 +11,12 @@ export class PAGE_PATH {
   static readonly SEARCH_PAGE: string = "SearchPageView"
   static readonly SEARCH_RESULT_PAGE: string = "SearchResultPageView"
 }
+
+/**
+ * 声音状态枚举
+ */
+export enum VoiceState {
+  DEFAULT,
+  VOICING,
+  VOICEOVER
+}
