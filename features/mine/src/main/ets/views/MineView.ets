@@ -1,5 +1,6 @@
-import { AppSafeArea, NavigationColumnComponent, RecommendComponent } from "basic"
+import { AppSafeArea, NavigationColumnComponent, PAGE_PATH, RecommendComponent } from "basic"
 import { AppStorageV2 } from "@kit.ArkUI"
+import { HMRouterMgr } from "@hadss/hmrouter"
 
 @ComponentV2
 export struct MineView {
@@ -36,11 +37,11 @@ export struct MineView {
       .height(50)
 
       Row({ space: 16 }) {
-        Image($r('app.media.ic_user_avatar'))
-          .width(40)
-          .aspectRatio(1)
-          .borderRadius(20)
-        if (true) {
+        if (false) {
+          Image($r('app.media.ic_user_avatar'))
+            .width(40)
+            .aspectRatio(1)
+            .borderRadius(20)
           Text("张三")
             .fontColor($r('[basic].color.black'))
             .fontWeight(500)
@@ -48,7 +49,11 @@ export struct MineView {
           Text('立即登录')
             .fontColor($r('[basic].color.black'))
             .fontWeight(500)
-            .onClick(() => {})
+            .onClick(() => {
+              HMRouterMgr.push({
+                pageUrl: PAGE_PATH.LOGIN_PAGE
+              })
+            })
         }
       }
       .width('100%')

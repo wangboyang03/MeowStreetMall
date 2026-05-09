@@ -10,6 +10,7 @@ export class PAGE_PATH {
   static readonly MAIN_PAGE: string = "HomePageView"
   static readonly SEARCH_PAGE: string = "SearchPageView"
   static readonly SEARCH_RESULT_PAGE: string = "SearchResultPageView"
+  static readonly LOGIN_PAGE: string = "LoginPageView"
 }
 
 /**
