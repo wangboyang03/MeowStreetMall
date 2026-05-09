@@ -1,7 +1,7 @@
 import { HMRouter, HMRouterMgr } from "@hadss/hmrouter";
-import { AppBreakPoint, AppSafeArea, BreakPointType, GoodsItem, LazyForEachDataSource, PAGE_PATH, SearchParams, SearchRouterParam, SortComponentOptions, SortField, SortMethod} from "basic";
+import { AppBreakPoint, AppSafeArea, BreakPointType, Goods, GoodsItem, LazyForEachDataSource, PAGE_PATH, SearchParams, SearchRouterParam, SortComponentOptions, SortField, SortMethod} from "basic";
 import { AppStorageV2 } from "@kit.ArkUI";
-import { Goods, SearchSortItem } from "../components";
+import { SearchSortItem } from "../components";
 import { getSearchResultApi } from "../apis";
 
 @HMRouter({ pageUrl: PAGE_PATH.SEARCH_RESULT_PAGE })

@@ -1,4 +1,4 @@
-import { GoodsItem } from "basic";
+import { GoodsItem, GoodsItems } from "basic";
 
 export interface Banner {
   id: string;
@@ -30,14 +30,6 @@ export interface SubType {
   id: string;
   title: string;
   goodsItems: GoodsItems;
-}
-
-export interface GoodsItems {
-  counts: number;
-  items: GoodsItem[];
-  page: number;
-  pages: number;
-  pageSize: number;
 }
 
 // 猜喜列表请求的参数类型

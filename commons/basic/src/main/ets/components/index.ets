@@ -1,3 +1,6 @@
+export * from './Goods'
 export * from './LoadingComponent'
 export * from './LoadingProgressComponent'
 export * from './NavigationBar'
+export * from './NavigationColumnComponent'
+export * from './RecommendComponent'

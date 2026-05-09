@@ -1,7 +1,6 @@
 import { HMRouter, HMRouterMgr } from "@hadss/hmrouter";
 import { AppSafeArea, PAGE_PATH } from "basic";
 import { AppStorageV2, KeyboardAvoidMode } from "@kit.ArkUI";
-import { SearchBox } from "../components";
 import { AudioSearch } from "../components/AudioSearch";
 
 @HMRouter({ pageUrl: PAGE_PATH.SEARCH_PAGE })

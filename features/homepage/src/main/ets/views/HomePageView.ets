@@ -1,5 +1,5 @@
-import { AppBreakPoint, AppSafeArea, AppSharedData, BreakPointEnum, BreakPointType, CategoryItem, Constants, GoodsItem, LazyForEachDataSource, LoadingComponent, LoadingProgressComponent, PAGE_PATH, SoundPoolPlayer} from "basic";
-import { DiscountGoods, Goods } from "../components";
+import { AppBreakPoint, AppSafeArea, AppSharedData, BreakPointEnum, BreakPointType, CategoryItem, Constants, Goods, GoodsItem, LazyForEachDataSource, LoadingComponent, LoadingProgressComponent, PAGE_PATH, SoundPoolPlayer} from "basic";
+import { DiscountGoods } from "../components";
 import { Banner, Params, DiscountType } from "../models";
 import { AppStorageV2, promptAction } from "@kit.ArkUI";
 import { getBannerApi, getCategoryApi, getHomePageNewApi, getHotRecommendApi, getInVogueApi, getOneStopApi, getRecommendApi} from "../apis";

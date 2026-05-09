@@ -37,6 +37,15 @@ export interface GuessParams {
   pageSize: number
 }
 
+// 搜索結果商品信息
+export interface GoodsItems {
+  counts: number;
+  items: GoodsItem[];
+  page: number;
+  pages: number;
+  pageSize: number;
+}
+
 /**
  * 搜索和猜喜返回的类型
  */
