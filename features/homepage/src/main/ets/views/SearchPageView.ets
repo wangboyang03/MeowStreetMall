@@ -8,7 +8,7 @@ import { AudioSearch } from "../components/AudioSearch";
 @ComponentV2
 export struct SearchPageView {
   safeAreaObject: AppSafeArea = AppStorageV2.connect(AppSafeArea, ()=> new AppSafeArea())! // 安全区避让对象
-  @Local keyword: string = '输入想要搜索的商品...' // 搜索关键词
+  @Local keyword: string = '' // 搜索关键词
 
   aboutToAppear(): void {
     this.getUIContext().setKeyboardAvoidMode(KeyboardAvoidMode.RESIZE) // 键盘避让
@@ -23,7 +23,15 @@ export struct SearchPageView {
         })
       }})
       // voice_searchItem
-      AudioSearch()
+      AudioSearch({
+        onComplete: (keyword) => {
+          this.keyword = keyword
+          HMRouterMgr.push({
+            pageUrl: PAGE_PATH.SEARCH_RESULT_PAGE,
+            param: { keyword: this.keyword }
+          })
+        }
+      })
     }
   }
 }

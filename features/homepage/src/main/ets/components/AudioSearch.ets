@@ -1,4 +1,4 @@
-import { AccessManager, VoiceState } from "basic";
+import { AccessManager, AudioCapturerManager, CoreSpeechManager, VoiceState } from "basic";
 import { promptAction } from "@kit.ArkUI";
 
 @ComponentV2
@@ -11,8 +11,13 @@ export struct AudioSearch {
    * 开始录音
    */
   startRecord() {
-    AccessManager.getInstance().checkPermission(["ohos.permission.MICROPHONE"], () => {
-      promptAction.showToast({ message: '可以开始录音了' })
+    AccessManager.getInstance().checkPermission(["ohos.permission.MICROPHONE"], async () => {
+      // promptAction.showToast({ message: '可以开始录音了' })
+      this.voiceState = VoiceState.VOICING
+      await CoreSpeechManager.getInstance().initEngine((content) => this.keyword = content) // 初始化识别引擎
+      AudioCapturerManager.getInstance().start((buffer)=>{
+        CoreSpeechManager.getInstance().startTransVoice(buffer) // 将buffer源传给识别引擎
+      })
     }, () => {
       promptAction.showToast({ message: '无权限' })
     })
@@ -21,7 +26,13 @@ export struct AudioSearch {
   /**
    * 结束录音
    */
-  closeRecord() {}
+  async closeRecord() {
+    this.onComplete(this.keyword.replace(/[^\p{L}\p{N}\s]/gu, '')) // 传递识别结果
+    this.keyword = ''; // 置空搜索词
+    this.voiceState = VoiceState.DEFAULT // 置为初始状态
+    await AudioCapturerManager.getInstance().stop() // 停止录音
+    CoreSpeechManager.getInstance().stopTransVoice() // 停止识别
+  }
 
   build() {
     Column() {
