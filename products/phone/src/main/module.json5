@@ -12,6 +12,7 @@
     "requestPermissions": [
       {"name": "ohos.permission.INTERNET"}, /** 申请网络权限 */
       {"name": "ohos.permission.GET_NETWORK_INFO"}, /** 获取当前网络状态 */
+      {"name": "ohos.permission.MICROPHONE", "reason": "$string:microphone_reason", "usedScene": {"when": "always", "abilities": ["PhoneAbility"]}}, /** 麦克风权限 */
     ],
     "deliveryWithInstall": true,
     "installationFree": false,

@@ -11,6 +11,10 @@
     {
       "name": "PhoneAbility_label",
       "value": "喵街商城"
+    },
+    {
+      "name": "microphone_reason",
+      "value": "现在正在调用设备麦克风权限，用于应用访问录音或语音识别等功能，禁止后将导致无法录音或者相关功能异常"
     }
   ]
 }

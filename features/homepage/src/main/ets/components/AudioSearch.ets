@@ -1,4 +1,5 @@
-import { VoiceState } from "basic";
+import { AccessManager, VoiceState } from "basic";
+import { promptAction } from "@kit.ArkUI";
 
 @ComponentV2
 export struct AudioSearch {
@@ -9,7 +10,13 @@ export struct AudioSearch {
   /**
    * 开始录音
    */
-  startRecord() {}
+  startRecord() {
+    AccessManager.getInstance().checkPermission(["ohos.permission.MICROPHONE"], () => {
+      promptAction.showToast({ message: '可以开始录音了' })
+    }, () => {
+      promptAction.showToast({ message: '无权限' })
+    })
+  }
 
   /**
    * 结束录音
