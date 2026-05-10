@@ -1,10 +1,11 @@
-import { AppSafeArea, NavigationColumnComponent, PAGE_PATH, RecommendComponent } from "basic"
-import { AppStorageV2 } from "@kit.ArkUI"
+import { AppSafeArea, NavigationColumnComponent, PAGE_PATH, RecommendComponent, UserInformation } from "basic"
+import { AppStorageV2, PersistenceV2 } from "@kit.ArkUI"
 import { HMRouterMgr } from "@hadss/hmrouter"
 
 @ComponentV2
 export struct MineView {
   safeAreaObject: AppSafeArea = AppStorageV2.connect(AppSafeArea, () => new AppSafeArea())! // 安全区避让对象
+  userInformation: UserInformation = PersistenceV2.connect(UserInformation, () => new UserInformation())!
   build() {
     Column() {
       Scroll() {
@@ -37,12 +38,12 @@ export struct MineView {
       .height(50)
 
       Row({ space: 16 }) {
-        if (false) {
-          Image($r('app.media.ic_user_avatar'))
+        if (!!this.userInformation.token) {
+          Image(this.userInformation.avatar ?? $r('app.media.ic_user_avatar'))
             .width(40)
             .aspectRatio(1)
             .borderRadius(20)
-          Text("张三")
+          Text(this.userInformation.nickname ?? 'null')
             .fontColor($r('[basic].color.black'))
             .fontWeight(500)
         } else {

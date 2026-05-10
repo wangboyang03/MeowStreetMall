@@ -1,12 +1,13 @@
 import { HMRouter, HMRouterMgr } from "@hadss/hmrouter";
-import { NavigationBar, PAGE_PATH } from "basic";
-import { promptAction } from "@kit.ArkUI";
+import { CustomDialogHelper, NavigationBar, PAGE_PATH, UserInformation } from "basic";
+import { PersistenceV2, promptAction } from "@kit.ArkUI";
+import { userLoginApi } from "../apis";
 
 @HMRouter({ pageUrl: PAGE_PATH.LOGIN_PAGE })
 @ComponentV2
 export struct LoginPageView {
-  @Local accountId: string = 'admin'
-  @Local password: string = 'admin'
+  @Local accountId: string = ''
+  @Local password: string = ''
   @Local agreeChick: boolean = false // 同意按鈕檢查
 
   @Styles form() {
@@ -18,6 +19,35 @@ export struct LoginPageView {
       top: 0,
       bottom: 0
     })
+  }
+
+  @Computed get buttonEnabled() {
+    return !!(this.accountId && this.password)
+  }
+
+  async onSubmit(): Promise<void> {
+    if (!this.agreeChick) {
+      return CustomDialogHelper.getInstance().showToast({ message: '请先勾选协议' })
+    }
+    const loginResult = await userLoginApi({
+      account: this.accountId,
+      password: this.password
+    })
+    // CustomDialogHelper.getInstance().showAlertDialog({
+    //   message: JSON.stringify(loginResult)
+    // })
+    const userInformation = PersistenceV2.connect(UserInformation, () => new UserInformation())
+    if (!!userInformation) {
+      userInformation.account = loginResult.account
+      userInformation.nickname = loginResult.nickname
+      userInformation.avatar = loginResult.avatar
+      userInformation.token = loginResult.token
+      HMRouterMgr.pop() // 登錄成功返回上一頁
+    } else {
+      CustomDialogHelper.getInstance().showAlertDialog({
+        message: '登录失败'
+      })
+    }
   }
 
   build() {
@@ -69,11 +99,13 @@ export struct LoginPageView {
         }
 
         Button('登录')
-          .enabled(!!this.agreeChick ?? false)
+          .enabled(this.buttonEnabled)
           .fontColor($r('[basic].color.white'))
           .form()
           .backgroundColor($r("[basic].color.black"))
-          .onClick(() => {})
+          .onClick(()=> {
+            this.onSubmit()
+          })
 
         Row() {
           Blank()

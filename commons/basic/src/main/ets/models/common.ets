@@ -23,3 +23,24 @@ export interface ResponseData<T> {
 export class AppSharedData {
   @Trace category: CategoryItem[] = [] // 分类列表
 }
+
+/**
+ * 解耦彈窗渲染參數
+ */
+export interface LoadingOption {
+  title?: string
+  color?: ResourceColor
+  pWidth?: number
+  strokeWidth?: number
+}
+
+/**
+ * 持久化存儲用戶信息
+ */
+@ObservedV2
+export class UserInformation {
+  @Trace token: string = ""
+  @Trace nickname: string = ""
+  @Trace avatar: string = ""
+  @Trace account: string = ""
+}
