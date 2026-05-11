@@ -5,7 +5,7 @@ import { HMRouterMgr } from "@hadss/hmrouter"
 @ComponentV2
 export struct MineView {
   safeAreaObject: AppSafeArea = AppStorageV2.connect(AppSafeArea, () => new AppSafeArea())! // 安全区避让对象
-  userInformation: UserInformation = PersistenceV2.connect(UserInformation, () => new UserInformation())!
+  userInformation: UserInformation = PersistenceV2.connect(UserInformation, () => new UserInformation())! // 用户信息
   build() {
     Column() {
       Scroll() {
@@ -27,11 +27,15 @@ export struct MineView {
     Column() {
       Row() {
         Blank()
-        if (true) {
+        if (!!(this.userInformation.token && this.userInformation.account)) {
           Image($r('[basic].media.ic_public_settings'))
             .width(24)
             .aspectRatio(1)
-            .onClick(() => {})
+            .onClick(() => {
+              HMRouterMgr.push({
+                pageUrl: PAGE_PATH.SETTING_PAGE
+              })
+            })
         }
       }
       .width('100%')
