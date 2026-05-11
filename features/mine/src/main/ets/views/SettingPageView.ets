@@ -1,4 +1,6 @@
-import { CellComponent, CellGroupComponent, NavigationBar, PAGE_PATH, UserInformation } from "basic";
+import { CellComponent, CellGroupComponent,
+  CustomDialogHelper,
+  NavigationBar, PAGE_PATH, UserInformation } from "basic";
 import { PersistenceV2 } from "@kit.ArkUI";
 import { HMRouter, HMRouterMgr } from "@hadss/hmrouter";
 
@@ -39,9 +41,14 @@ export struct SettingPageView {
         .gesture(
           TapGesture()
             .onAction(() => {
-              this.userInformation.token = ""
-              this.userInformation.avatar = ""
-              HMRouterMgr.pop()
+              CustomDialogHelper.getInstance().showConfirmDialog({
+                message: '您确认要退出登录吗?',
+                onRightClick: () => {
+                  this.userInformation.token = ""
+                  this.userInformation.avatar = ""
+                  HMRouterMgr.pop()
+                }
+              })
             })
         )
       }

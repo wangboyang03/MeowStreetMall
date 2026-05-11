@@ -1,4 +1,4 @@
-import { LoadingOption } from "../models";
+import { ConfirmOption, LoadingOption } from "../models";
 import { ComponentContent, promptAction, window } from "@kit.ArkUI";
 import { util } from "@kit.ArkTS";
 import { LoadingProgressComponent } from "../components/LoadingProgressComponent";
@@ -71,10 +71,38 @@ export class CustomDialogHelper {
       this.mUIContext?.getPromptAction().showDialog(options)
     })
   }
+
+  // 確認彈窗
+  showConfirmDialog(options?: Partial<ConfirmOption>) {
+    let key = ""
+    this.initUIContext().then(() => {
+      const promptAction = this.mUIContext?.getPromptAction() // 获取弹窗对象
+      const emptyFunction = () => {} // 空函数
+      const onLeftClick = options?.onLeftClick ?? emptyFunction
+      const onRightClick = options?.onRightClick ?? emptyFunction
+      // 這樣做是爲了如果有自定義操作 先執行自定義操作 再關閉彈窗
+      const leftAction = async () => {
+        await onLeftClick()
+        this.closeLoading(key)
+      }
+      const rightAction = async () => {
+        await onRightClick()
+        this.closeLoading(key)
+      }
+      if (!!options) {
+        options.onLeftClick = leftAction
+        options.onRightClick = rightAction
+      }
+      const componentContent = new ComponentContent(this.mUIContext!, wrapBuilder(ConfirmBuilder), options as Object)
+      key = util.generateRandomUUID()
+      this.dialogMap.set(key, componentContent)
+      promptAction?.openCustomDialog(componentContent)
+    })
+    return (): Promise<void> => this.closeLoading(key)
+  }
 }
 
-@Builder
-function LoadingBuilder(options?: LoadingOption) {
+@Builder function LoadingBuilder(options?: LoadingOption) {
   Column({ space: 20 }) {
     LoadingProgressComponent({
       progressWidth: options?.pWidth ?? 40,
@@ -89,4 +117,58 @@ function LoadingBuilder(options?: LoadingOption) {
   .aspectRatio(1)
   .borderRadius(10)
   .backgroundColor("rgba(0,0,0,0.4)")
+}
+
+@Builder function ConfirmBuilder(options?: Partial<ConfirmOption>) {
+  Column({ space: 10 }) {
+    Row() {
+      Text(options?.message ?? "您可能正在执行危险性操作，这些操作一旦生效将无法回滚，需要用户确认。")
+    }
+    .width("100%")
+    .padding({
+      top: 30,
+      bottom: 30
+    })
+    .justifyContent(FlexAlign.Center)
+
+    Row() {
+      Text(options?.leftText ?? "取消")
+        .fontColor(options?.leftColor ?? $r("app.color.gray"))
+        .layoutWeight(1)
+        .textAlign(TextAlign.Center)
+        .border({
+          color: $r("app.color.gray"),
+          width: {
+            right: 0.5
+          }
+        })
+        .height("100%")
+        .onClick(() => {
+          options?.onLeftClick?.()
+          // if (options) {
+          //   options.onLeftClick && options.onLeftClick()
+          // }
+        })
+      Text(options?.rightText ?? "好")
+        .layoutWeight(1)
+        .textAlign(TextAlign.Center)
+        .fontColor(options?.rightColor ?? $r("app.color.red"))
+        .onClick(() => {
+          options?.onRightClick?.()
+        })
+        .height("100%")
+    }
+    .height(50)
+    .border({
+      width: {
+        top: 0.5
+      },
+      color: $r("app.color.gray")
+    })
+    .width("100%")
+  }
+  .justifyContent(FlexAlign.Center)
+  .width(280)
+  .borderRadius(10)
+  .backgroundColor($r("app.color.white"))
 }

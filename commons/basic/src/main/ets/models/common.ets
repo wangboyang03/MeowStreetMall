@@ -34,6 +34,16 @@ export interface LoadingOption {
   strokeWidth?: number
 }
 
+export interface ConfirmOption {
+  message: string
+  leftText: string
+  rightText: string
+  leftColor: ResourceColor
+  rightColor: ResourceColor
+  onLeftClick: () => void
+  onRightClick: () => void
+}
+
 /**
  * 持久化存儲用戶信息
  */
