@@ -38,8 +38,9 @@ export struct GoodsPageView {
   build() {
     Column() {
       NavigationBar({
+        showLeftIcon: true,
         showRightIcon: true,
-        customTitle: () => {},
+        customTitle: (): void => this.CustomTitleBuilder(),
         onLeftClick: () => HMRouterMgr.pop()
       })
 
@@ -116,13 +117,16 @@ export struct GoodsPageView {
     // 楼层切换
     Row() {
       Row({ space: 10 }) {
-        ForEach(this.tabsList, (tabName: string, index: number) => {
-          Text(tabName)
-            .fontColor(this.activeIndex === index ? $r("[basic].color.black") : $r("[basic].color.gray"))
-            .onClick(() => {})
+        Repeat<string>(this.tabsList).each((object: RepeatItem<string>) => {
+          Text(object.item)
+            .fontColor(this.activeIndex == object.index ? $r("[basic].color.black") : $r("[basic].color.gray"))
+            .onClick(() => {
+              this.activeIndex = object.index // 默认选中第一个
+              this.scroller.scrollToIndex(object.index) // 滚动到指定位置
+            })
         })
       }
-      Image($r('[basic].media.ic_public_shared'))
+      Image($r('[basic].media.ic_public_shared')).iconButton()
     }
     .justifyContent(FlexAlign.SpaceBetween)
     .width("100%")

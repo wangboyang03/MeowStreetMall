@@ -21,7 +21,7 @@ export struct NavigationBar {
         Image(this.leftIcon)
           .draggable(false)
           .fillColor(this.color)
-          .width(18)
+          .width(24)
           .aspectRatio(1)
           .alignRules({
             center: {
@@ -29,14 +29,12 @@ export struct NavigationBar {
               align: VerticalAlign.Center
             }
           })
-          .onClick(() => {
-            this.onLeftClick()
-          })
+          .onClick(() => this.onLeftClick())
       }
       if (this.showRightIcon) {
         Image(this.rightIcon)
           .draggable(false)
-          .width(18)
+          .width(24)
           .aspectRatio(1)
           .fillColor(this.color)
           .alignRules({
@@ -49,9 +47,8 @@ export struct NavigationBar {
               align: HorizontalAlign.End
             }
           })
-          .onClick(() => {
-            this.onRightClick()
-          })
+          .onClick(() => this.onRightClick())
+          .zIndex(2)
       }
       if (this.title) {
         Text(this.title)
