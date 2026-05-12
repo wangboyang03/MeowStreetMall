@@ -1,12 +1,16 @@
+import { HMRouterMgr } from "@hadss/hmrouter"
+import { PAGE_PATH } from "../Constants"
 import { GoodsItem } from "../models"
 
 @ComponentV2
 export struct Goods {
   @Param goodsItem: GoodsItem = {} as GoodsItem
   @Param smallImage: boolean = false
+
   build() {
     this.GoodsComponent()
   }
+
   @Builder GoodsComponent() {
     Column({ space: 10 }) {
       if (this.smallImage) {
@@ -56,5 +60,12 @@ export struct Goods {
     .backgroundColor($r('app.color.white'))
     .borderRadius(8)
     .clip(true)
+    .geometryTransition(this.goodsItem.id)
+    .onClick(() => {
+      HMRouterMgr.push({
+        pageUrl: PAGE_PATH.GOODS_PAGE,
+        param: this.goodsItem
+      })
+    })
   }
 }

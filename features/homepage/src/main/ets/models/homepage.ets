@@ -36,3 +36,7 @@ export interface SubType {
 export interface RecommendParams {
   limit: number // 条数
 }
+
+export interface GoodsParams {
+  id: string
+}
