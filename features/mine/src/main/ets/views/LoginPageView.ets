@@ -1,7 +1,7 @@
 import { HMRouter, HMRouterMgr } from "@hadss/hmrouter";
-import { CustomDialogHelper, NavigationBar, PAGE_PATH, UserInformation } from "basic";
+import { CustomDialogHelper, HuaweiAuthManager, NavigationBar, PAGE_PATH, UserInformation } from "basic";
 import { PersistenceV2, promptAction } from "@kit.ArkUI";
-import { userLoginApi } from "../apis";
+import { huaweiLoginApi, userLoginApi } from "../apis";
 
 @HMRouter({ pageUrl: PAGE_PATH.LOGIN_PAGE })
 @ComponentV2
@@ -130,7 +130,18 @@ export struct LoginPageView {
           }
 
           Row() {
-            // 华为登录 數字身份證 QQ微信登錄
+            Image($r("app.media.ic_user_huawei"))
+              .width(36)
+              .aspectRatio(1)
+              .onClick(async () => {
+                const code = (await HuaweiAuthManager.getInstance().launchAuth())! // 拉起华为登录
+                const result = await huaweiLoginApi({
+                  code,
+                  clientId: '111140751',
+                  clientSecret: 'c084a00eb0f8cc2c6fe97f0c2d344e6a67a934ffdf3d334258268fd5836cc166'
+                })
+                HMRouterMgr.pop() // 返回上一层
+              })
           }
         }
         .margin({ top: 200 })

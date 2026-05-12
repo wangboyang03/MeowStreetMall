@@ -11,3 +11,11 @@ export interface LoginResult {
   nickname: string;
   token: string;
 }
+
+// 华为登录请求返回参数
+export interface HuaweiLoginParams {
+  clientId: string; // 客户端id
+  clientSecret: string; // 客户端秘钥
+  code: string; // 华为授权码
+
+}

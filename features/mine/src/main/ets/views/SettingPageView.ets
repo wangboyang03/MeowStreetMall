@@ -1,5 +1,6 @@
 import { CellComponent, CellGroupComponent,
   CustomDialogHelper,
+  HuaweiAuthManager,
   NavigationBar, PAGE_PATH, UserInformation } from "basic";
 import { PersistenceV2 } from "@kit.ArkUI";
 import { HMRouter, HMRouterMgr } from "@hadss/hmrouter";
@@ -46,6 +47,7 @@ export struct SettingPageView {
                 onRightClick: () => {
                   this.userInformation.token = ""
                   this.userInformation.avatar = ""
+                  HuaweiAuthManager.getInstance().exitAuth() // 退出华为登录
                   HMRouterMgr.pop()
                 }
               })
