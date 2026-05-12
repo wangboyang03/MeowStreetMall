@@ -20,8 +20,11 @@ export struct GoodsPageView {
   safeAreaObject: AppSafeArea = AppStorageV2.connect(AppSafeArea, () => new AppSafeArea())! // 安全区避让对象
 
   aboutToAppear(): void {
-    this.goods = HMRouterMgr.getCurrentParam() as Goods
+    const goods = HMRouterMgr.getCurrentParam() as Goods
+    goods.mainPictures = [goods.picture as string] // 轮播图 有数据
+    this.goods = goods
     this.getGoodsDetail()
+    // HMRouterMgr.getCurrentLifecycleOwner()?.addObserver(HMLifecycleState.onShown, () => AlertDialog.show({ message: '获取数据' }))
   }
 
   async getGoodsDetail() {
