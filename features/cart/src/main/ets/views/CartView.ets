@@ -1,6 +1,8 @@
 import { HMRouter, HMRouterMgr } from "@hadss/hmrouter"
-import { PersistenceV2 } from "@kit.ArkUI"
-import {AppUserCenter, CartGoodsModel, Constants, EmptyContentComponent, NavigationBar, PAGE_PATH, RecommendComponent } from "basic"
+import { AppStorageV2, PersistenceV2 } from "@kit.ArkUI"
+import {
+  AppShoppingCart,
+  AppUserCenter, CartGoodsModel, Constants, EmptyContentComponent, NavigationBar, PAGE_PATH, RecommendComponent } from "basic"
 import { CartItem } from "../components"
 import { emitter } from "@kit.BasicServicesKit"
 
@@ -8,7 +10,7 @@ import { emitter } from "@kit.BasicServicesKit"
 @ComponentV2
 export struct CartView {
   userInformation?: AppUserCenter = PersistenceV2.connect(AppUserCenter, () => new AppUserCenter()) // 用户信息
-  @Local cartList: CartGoodsModel[] = [] // 购物车列表
+  appShoppingCart?: AppShoppingCart = AppStorageV2.connect(AppShoppingCart, () => new AppShoppingCart()) // 全局购物车
 
   onCheckOrder() {
     AlertDialog.show({
@@ -27,11 +29,11 @@ export struct CartView {
 
       List() {
         if (!!this.userInformation?.user.token) {
-          if (this.cartList.length) {
-            ForEach(this.cartList, (cart: CartGoodsModel) => {
+          if (this.appShoppingCart?.cartList.length) {
+            Repeat(this.appShoppingCart?.cartList).each((object: RepeatItem<CartGoodsModel>) => {
               ListItem() {
                 CartItem({
-                  cartGoodsModel: cart,
+                  cartGoodsModel: object.item,
                   onChangeSelected: async selected => {}
                 })
               }
@@ -42,9 +44,11 @@ export struct CartView {
               })
               .transition({ type: TransitionType.Delete, opacity: 0 })
               .swipeAction({
-                end: this.DeleteBuilder(cart)
+                end: this.DeleteBuilder(object.item)
               })
             })
+              .virtualScroll()
+              .key((item: CartGoodsModel, index: number) => `${index}_${JSON.stringify(item)}`)
           } else {
             ListItem() {
               // 购物车是空的
@@ -90,7 +94,7 @@ export struct CartView {
       .layoutWeight(1)
       .scrollBar(BarState.Off)
 
-      if (this.cartList.length) {
+      if (this.appShoppingCart?.cartList.length) {
         Row() {
           Checkbox()
             .selectedColor($r('[basic].color.red'))
@@ -109,7 +113,7 @@ export struct CartView {
             .fontColor($r('[basic].color.red'))
             .layoutWeight(1)
           Button('去结算')
-            .enabled(this.cartList.some(item => item.selected))
+            .enabled(this.appShoppingCart?.cartList.some(item => item.selected))
             .fontSize(14)
             .height(36)
             .backgroundColor($r('[basic].color.red'))
