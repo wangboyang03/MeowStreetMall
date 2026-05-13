@@ -1,5 +1,5 @@
 import { HMLifecycleState, HMRouter, HMRouterMgr } from "@hadss/hmrouter"
-import { AppSafeArea, CustomDialogHelper, NavigationBar, PAGE_PATH, RecommendComponent, SkuType, Sku, Auth, addShoppingCartApi} from "basic"
+import { AppSafeArea, CustomDialogHelper, NavigationBar, PAGE_PATH, RecommendComponent, SkuType, Sku, Auth, addShoppingCartApi, ShoppingCartAuth, AppShoppingCart, AppUserCenter} from "basic"
 import { Goods, StoreType } from "../models"
 import { AppStorageV2, PersistenceV2 } from "@kit.ArkUI"
 import { GoodsInformation } from "../components/GoodsInformation"
@@ -19,6 +19,7 @@ export struct GoodsPageView {
   scroller = new Scroller() // 滚动控制器
   tabsList: string[] = ["商品", "评价", "详情", "推荐"]
   safeAreaObject?: AppSafeArea = AppStorageV2.connect(AppSafeArea, () => new AppSafeArea()) // 安全区避让对象
+  appShoppingCart?: AppShoppingCart = AppStorageV2.connect(AppShoppingCart, () => new AppShoppingCart())
 
   aboutToAppear(): void {
     const goods = HMRouterMgr.getCurrentParam() as Goods
@@ -78,6 +79,7 @@ export struct GoodsPageView {
           skuId: this.sku.id,
           count: this.goodsCount
         }) // 前端没有理由直接带入商品价格
+        ShoppingCartAuth.getInstance().updateCartCount() // 更新购物袋数量
         this.showSheet = false
         CustomDialogHelper.getInstance().showToast({
           message: '添加成功'
@@ -145,13 +147,29 @@ export struct GoodsPageView {
         Image($r('[basic].media.ic_public_like')).iconButton()
         Image($r('[basic].media.ic_public_comment')).iconButton()
         Badge({
-          count: 0,
+          count: this.appShoppingCart?.count ?? 0,
           style: {},
           position: { x: 30, y: 4 }
         }) {
           Image($r('[basic].media.ic_public_cart'))
             .iconButton()
-            .onClick(() => {})
+            .onClick(() => {
+              // const user = Auth.getInstance().getUser()
+              const user = PersistenceV2.connect(AppUserCenter, () => new AppUserCenter())
+              if (!!user?.user.token) {
+                HMRouterMgr.push({
+                  pageUrl: PAGE_PATH.SHOPPING_CART_PAGE,
+                  param: true
+                })
+              } else {
+                CustomDialogHelper.getInstance().showToast({
+                  message: '请先登录'
+                })
+                HMRouterMgr.push({
+                  pageUrl: PAGE_PATH.LOGIN_PAGE
+                })
+              }
+            })
         }
 
         Row() {

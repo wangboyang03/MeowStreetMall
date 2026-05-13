@@ -14,6 +14,7 @@ export class PAGE_PATH {
   static readonly LOGIN_PAGE: string = "LoginPageView"
   static readonly SETTING_PAGE: string = "SettingPageView"
   static readonly GOODS_PAGE: string = "GoodsPageView"
+  static readonly SHOPPING_CART_PAGE: string = "CartView"
 }
 
 /**

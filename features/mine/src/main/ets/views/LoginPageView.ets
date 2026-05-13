@@ -1,5 +1,5 @@
 import { HMRouter, HMRouterMgr } from "@hadss/hmrouter";
-import { Auth, CustomDialogHelper, HuaweiAuthManager, NavigationBar, PAGE_PATH } from "basic";
+import { Auth, CustomDialogHelper, HuaweiAuthManager, NavigationBar, PAGE_PATH, ShoppingCartAuth } from "basic";
 import { huaweiLoginApi, userLoginApi } from "../apis";
 
 @HMRouter({ pageUrl: PAGE_PATH.LOGIN_PAGE })
@@ -42,6 +42,7 @@ export struct LoginPageView {
       user.avatar = loginResult.avatar
       user.token = loginResult.token
       HMRouterMgr.pop() // 登錄成功返回上一頁
+      ShoppingCartAuth.getInstance().updateCartCount() // 登陆成功的时候也更新购物车
     } else {
       CustomDialogHelper.getInstance().showAlertDialog({
         message: '登录失败'
@@ -139,6 +140,8 @@ export struct LoginPageView {
                   clientId: '111140751',
                   clientSecret: 'c084a00eb0f8cc2c6fe97f0c2d344e6a67a934ffdf3d334258268fd5836cc166'
                 })
+                Auth.getInstance().setUser(result)
+                await ShoppingCartAuth.getInstance().updateCartCount() // 登陆成功之后更新购物车
                 HMRouterMgr.pop() // 返回上一层
               })
           }

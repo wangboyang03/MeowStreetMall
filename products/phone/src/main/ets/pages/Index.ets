@@ -1,4 +1,6 @@
-import { AppBreakPoint, AppSafeArea, BreakPointType, Constants, PAGE_PATH, TabItem } from 'basic'
+import { AppBreakPoint, AppSafeArea,
+  AppShoppingCart,
+  BreakPointType, Constants, PAGE_PATH, ShoppingCartAuth, TabItem } from 'basic'
 import { CartView } from 'cart'
 import { CategoryView } from 'category'
 import { HomePageView } from 'homepage'
@@ -20,11 +22,13 @@ struct Index {
     { text: '我的', normal: $r('app.media.ic_public_my_normal'), active: $r('app.media.ic_public_my_active') },
   ]
   modifierObject: MyModifier = new MyModifier() // 修改Navigation特性对象实例
+  appSHoppingCart?: AppShoppingCart = AppStorageV2.connect(AppShoppingCart, ()=> new AppShoppingCart())
 
   /**
    * 统一注册广播事件监听
    */
   registerEvent() {
+    ShoppingCartAuth.getInstance().updateCartCount() // 初始化时更新数量
     // 切换底Tab到首页
     emitter.on(Constants.SWITCH_TAB, (event) => {
       if (event.data) {
@@ -65,7 +69,7 @@ struct Index {
                 MineView()
               }
             }
-            .tabBar(this.getTabItemBuilder(item, index))
+            .tabBar(this.getFullTabItemBuilder(item, index))
           })
         }
         .barHeight(new BreakPointType({
@@ -107,6 +111,16 @@ struct Index {
     }
     .justifyContent(FlexAlign.SpaceEvenly)
     .height(50)
+  }
+
+  @Builder getFullTabItemBuilder(item: TabItem, index: number) {
+    if (index == 2) {
+      Badge({ count: this.appSHoppingCart?.count ?? 0, style: {} }) {
+        this.getTabItemBuilder(item, index)
+      }
+    } else {
+      this.getTabItemBuilder(item, index)
+    }
   }
 }
 

@@ -1,6 +1,6 @@
-import { RequestRemoteCommunication } from "basic";
-import { HuaweiLoginParams, LoginParams, LoginResult } from "../models";
+import { RequestRemoteCommunication, User } from "basic";
+import { HuaweiLoginParams, LoginParams } from "../models";
 
-export const userLoginApi = (data: LoginParams) => RequestRemoteCommunication.post<LoginResult>("/login", data)
+export const userLoginApi = (data: LoginParams) => RequestRemoteCommunication.post<User>("/login", data)
 
-export const huaweiLoginApi = (data: HuaweiLoginParams) => RequestRemoteCommunication.post<LoginResult>("/login/huawei", data)
+export const huaweiLoginApi = (data: HuaweiLoginParams) => RequestRemoteCommunication.post<User>("/login/huawei", data)

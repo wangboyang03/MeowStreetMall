@@ -1,9 +1,10 @@
-import { HMRouterMgr } from "@hadss/hmrouter"
+import { HMRouter, HMRouterMgr } from "@hadss/hmrouter"
 import { PersistenceV2 } from "@kit.ArkUI"
 import {AppUserCenter, CartGoodsModel, Constants, EmptyContentComponent, NavigationBar, PAGE_PATH, RecommendComponent } from "basic"
 import { CartItem } from "../components"
 import { emitter } from "@kit.BasicServicesKit"
 
+@HMRouter({ pageUrl: PAGE_PATH.SHOPPING_CART_PAGE })
 @ComponentV2
 export struct CartView {
   userInformation?: AppUserCenter = PersistenceV2.connect(AppUserCenter, () => new AppUserCenter()) // 用户信息

@@ -1,4 +1,6 @@
-import {AppUserCenter, CellComponent, CellGroupComponent, CustomDialogHelper, HuaweiAuthManager, NavigationBar, PAGE_PATH, UserInformation } from "basic";
+import {AppUserCenter, CellComponent, CellGroupComponent, CustomDialogHelper, HuaweiAuthManager, NavigationBar, PAGE_PATH,
+  ShoppingCartAuth,
+  UserInformation } from "basic";
 import { PersistenceV2 } from "@kit.ArkUI";
 import { HMRouter, HMRouterMgr } from "@hadss/hmrouter";
 
@@ -46,6 +48,7 @@ export struct SettingPageView {
                     this.appUserCenter.user.token = ""
                     this.appUserCenter.user.avatar = ""
                     HuaweiAuthManager.getInstance().exitAuth() // 退出华为登录
+                    ShoppingCartAuth.getInstance().updateCartCount() // 登出时更新购物车数量
                     HMRouterMgr.pop()
                   }
                 }

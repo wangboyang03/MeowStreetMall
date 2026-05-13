@@ -104,3 +104,7 @@ export interface AddCartParams {
   skuId: string
   count: number
 }
+
+export interface CartCount {
+  count: number
+}
