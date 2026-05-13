@@ -1,5 +1,5 @@
 import { RequestRemoteCommunication } from "../utils";
-import { AddCartParams, CartCount, CartGoods, UpdateCartCount } from "../models";
+import { AddCartParams, CartCount, CartGoods, DeleteCartGoods, UpdateCartCount } from "../models";
 
 export const addShoppingCartApi = (data: AddCartParams) => RequestRemoteCommunication.post<null>("/member/cart", data)
 
@@ -10,3 +10,5 @@ export const getShoppingCartListApi = () => RequestRemoteCommunication.get<CartG
 export const updateShoppingCartApi = (skuId: string, data: UpdateCartCount) => RequestRemoteCommunication.put<null>(`/member/cart/${skuId}`, data)
 
 export const selectOrUnSelectCartApi = (data: UpdateCartCount) => RequestRemoteCommunication.put<null>("/member/cart/selected", data)
+
+export const deleteCartGoodsApi = (data: DeleteCartGoods) => RequestRemoteCommunication.delete<null>("/member/cart", undefined, data)

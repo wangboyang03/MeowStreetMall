@@ -1,6 +1,6 @@
 import { HMRouter, HMRouterMgr } from "@hadss/hmrouter"
 import { AppStorageV2, PersistenceV2 } from "@kit.ArkUI"
-import { AppShoppingCart, AppUserCenter, CartGoodsModel, Constants, EmptyContentComponent, NavigationBar, PAGE_PATH, RecommendComponent, selectOrUnSelectCartApi, ShoppingCartAuth, UpdateCartCount, updateShoppingCartApi } from "basic"
+import { AppSafeArea, AppShoppingCart, AppUserCenter, CartGoodsModel, Constants, CustomDialogHelper, deleteCartGoodsApi, EmptyContentComponent, NavigationBar, PAGE_PATH, RecommendComponent, selectOrUnSelectCartApi, ShoppingCartAuth, UpdateCartCount, updateShoppingCartApi } from "basic"
 import { CartItem } from "../components"
 import { emitter } from "@kit.BasicServicesKit"
 
@@ -9,6 +9,8 @@ import { emitter } from "@kit.BasicServicesKit"
 export struct CartView {
   userInformation?: AppUserCenter = PersistenceV2.connect(AppUserCenter, () => new AppUserCenter()) // 用户信息
   appShoppingCart?: AppShoppingCart = AppStorageV2.connect(AppShoppingCart, () => new AppShoppingCart()) // 全局购物车
+  safeAreaObject?: AppSafeArea = AppStorageV2.connect(AppSafeArea, () => new AppSafeArea()) // 安全区避让对象
+  @Local showLeftIcon: boolean = false
 
   onCheckOrder() {
     AlertDialog.show({
@@ -24,10 +26,26 @@ export struct CartView {
     return this.appShoppingCart?.cartList.every(item => item.selected)
   }
 
+  /**
+   * 计算购物车内商品总价格
+   * return number 商品总价
+   */
+  @Computed get getAllGoodsPriceWithCart() {
+    return this.appShoppingCart?.cartList.filter(item => item.selected).reduce((preValue: number, item: CartGoodsModel) => {
+        return preValue + item.count * item.price
+      }, 0)
+  }
+
+  aboutToAppear(): void {
+    this.showLeftIcon = HMRouterMgr.getCurrentParam() as boolean
+  }
+
   build() {
     Column() {
       NavigationBar({
-        title: '购物袋'
+        title: '购物袋',
+
+        showLeftIcon: this.showLeftIcon
       }).border({
         width: { bottom: 0.5 },
         color: '#E4E4E4'
@@ -132,13 +150,13 @@ export struct CartView {
             .fontSize(14)
             .fontColor($r('[basic].color.black'))
             .margin({ right: 2 })
-          Text("0.00")
+          Text(this.getAllGoodsPriceWithCart?.toFixed(2))
             .fontSize(16)
             .fontWeight(500)
             .fontColor($r('[basic].color.red'))
             .layoutWeight(1)
           Button('去结算')
-            .enabled(this.appShoppingCart?.cartList.some(item => item.selected))
+            .enabled(this.isCheckAll)
             .fontSize(14)
             .height(36)
             .backgroundColor($r('[basic].color.red'))
@@ -163,6 +181,9 @@ export struct CartView {
     .width('100%')
     .height('100%')
     .backgroundColor($r('[basic].color.under'))
+    .padding({
+      bottom: this.showLeftIcon ? this.safeAreaObject?.bottomHeight : 0
+    })
   }
 
   @Builder DeleteBuilder(cart: CartGoodsModel) {
@@ -173,6 +194,14 @@ export struct CartView {
       .textAlign(TextAlign.Center)
       .width(60)
       .height(100)
-      .onClick(() => {})
+      .onClick(() => {
+        CustomDialogHelper.getInstance().showConfirmDialog({
+          message: "您确定要删除该商品吗？删除后将无法找回。",
+          onRightClick: async () => {
+            await deleteCartGoodsApi({ ids: [cart.skuId] })
+            ShoppingCartAuth.getInstance().updateCartCount() // 商品数量发生改变 更新购物车数量
+          }
+        })
+      })
   }
 }

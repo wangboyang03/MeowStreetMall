@@ -116,3 +116,10 @@ export interface UpdateCartCount {
   selected: boolean
   count: number
 }
+
+/**
+ * 删除购物车内商品
+ */
+export interface DeleteCartGoods {
+  ids: string[]
+}
