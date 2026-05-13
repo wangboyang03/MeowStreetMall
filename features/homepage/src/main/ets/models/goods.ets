@@ -27,3 +27,10 @@ export interface SpecValue {
   selected: boolean | null
   disabled: boolean | null
 }
+
+export interface StoreType {
+  text: string
+  color: ResourceColor
+  canBuy: boolean
+}
+

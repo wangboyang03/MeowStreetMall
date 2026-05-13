@@ -1,6 +1,6 @@
 import { HMLifecycleState, HMRouter, HMRouterMgr } from "@hadss/hmrouter"
-import { AppSafeArea, CustomDialogHelper, NavigationBar, PAGE_PATH, RecommendComponent, SkuType } from "basic"
-import { Goods } from "../models"
+import { AppSafeArea, CustomDialogHelper, NavigationBar, PAGE_PATH, RecommendComponent, SkuType, Sku } from "basic"
+import { Goods, StoreType } from "../models"
 import { AppStorageV2 } from "@kit.ArkUI"
 import { GoodsInformation } from "../components/GoodsInformation"
 import { GoodsComment } from "../components/GoodsComment"
@@ -15,6 +15,7 @@ export struct GoodsPageView {
   @Local loading: boolean = false
   @Local showSheet: boolean = false
   @Local sku: SkuType = {} as SkuType
+  @Local goodsCount: number = 1 // 商品默认数量
   scroller = new Scroller() // 滚动控制器
   tabsList: string[] = ["商品", "评价", "详情", "推荐"]
   safeAreaObject: AppSafeArea = AppStorageV2.connect(AppSafeArea, () => new AppSafeArea())! // 安全区避让对象
@@ -27,6 +28,9 @@ export struct GoodsPageView {
     // HMRouterMgr.getCurrentLifecycleOwner()?.addObserver(HMLifecycleState.onShown, () => AlertDialog.show({ message: '获取数据' }))
   }
 
+  /**
+   * 获取商品详情
+   */
   async getGoodsDetail() {
     const loadingTips = CustomDialogHelper.getInstance().showLoading({ title: '详情加载中...' })
     this.goods = await getGoodsDetailApi({
@@ -34,6 +38,32 @@ export struct GoodsPageView {
     })
     loadingTips() // 封装CustomDialogHelper时返回值为异步回调函数 调用关闭弹窗
   }
+
+  /**
+   * 计算库存数量
+   */
+  @Computed get showCountType() {
+    if (!this.goods.inventory) {
+      return {
+        text: '沽清',
+        color: $r("[basic].color.red"),
+        canBuy: false
+      } as StoreType
+    } else if (this.goods.inventory > 1000) {
+      return {
+        text: '库存充足',
+        color: $r("[basic].color.gray"),
+        canBuy: true
+      } as StoreType
+    } else {
+      return {
+        text: '库存紧张',
+        color: $r("[basic].color.yellow"),
+        canBuy: true
+      } as StoreType
+    }
+  }
+
 
   build() {
     Column() {
@@ -92,10 +122,14 @@ export struct GoodsPageView {
         Row() {
           Button('加入购物袋')
             .buyButton($r('[basic].color.black'), true)
-            .onClick(() => {})
+            .onClick(() => {
+              this.showSheet = true
+            })
           Button('立即购买')
             .buyButton($r('[basic].color.red'), false)
-            .onClick(async () => {})
+            .onClick(async () => {
+              this.showSheet = true
+            })
         }
         .layoutWeight(1)
         .padding({ right: 16, left: 6 })
@@ -149,7 +183,7 @@ export struct GoodsPageView {
         .textOverflow({ overflow: TextOverflow.Ellipsis })
         .visibility(this.sku.id ? Visibility.Visible : Visibility.Hidden)
       Row({ space: 10 }) {
-        Image(this.sku.picture || this.goods.mainPictures?.[0])
+        Image(this.sku.picture ?? this.goods.mainPictures?.[0])
           .alt($r('app.media.ic_sku_img'))
           .width(80)
           .height(80)
@@ -157,15 +191,15 @@ export struct GoodsPageView {
           .borderRadius(4)
         Column() {
           Row() {
-            Text('现价¥')
+            Text('现价¥'+' ')
               .fontSize(14)
               .fontColor($r('[basic].color.black'))
               .offset({ y: -4 })
-            Text(this.sku.price || this.goods.price)
+            Text(this.sku.price ?? this.goods.price)
               .fontSize(24)
               .fontColor($r('[basic].color.black'))
               .fontWeight(500)
-            Text('原价¥' + (this.sku.oldPrice || this.goods.price))
+            Text('原价¥' + (this.sku.oldPrice ?? this.goods.price))
               .fontSize(12)
               .fontColor($r('[basic].color.gray'))
               .margin({ left: 10 })
@@ -179,11 +213,16 @@ export struct GoodsPageView {
 
           Row({ space: 10 }) {
             // 计数器
-
-
-            Text('库存充足')
+            Counter() {
+              Text(this.goodsCount.toString())
+            }.enableDec(this.goodsCount > 1) // 限定最小数量
+            .onInc(() => this.goodsCount++) // 增加数量
+            .onDec(() => this.goodsCount--) // 减少数量
+            // Text(this.goods.inventory > 1000 ? '库存充足' : "库存紧张")
+            Text(this.showCountType.text)
               .fontSize(12)
-              .fontColor($r('[basic].color.gray'))
+              // .fontColor(this.goods.inventory > 1000 ? $r('[basic].color.gray') : $r('[basic].color.red'))
+            .fontColor(this.showCountType.color)
           }
         }
         .height(80)
@@ -200,7 +239,11 @@ export struct GoodsPageView {
       List() {
         ListItem() {
           // Sku 组件
-
+          Sku({
+            skus: this.goods.skus,
+            specs: this.goods.specs,
+            onSkuChange: (sku) => this.sku = sku // 用于接收Sku组件传递过来的规格商品
+          })
         }
       }
       .layoutWeight(1)
@@ -211,7 +254,7 @@ export struct GoodsPageView {
           .buyButton($r('[basic].color.black'), true)
           .onClick(() => {})
         Button('立即购买')
-          .buyButton($r('[basic].color.red'), true)
+          .buyButton($r('[basic].color.red'), false)
           .onClick(async () => {})
       }
       .width('100%')
