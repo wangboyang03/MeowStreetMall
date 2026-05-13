@@ -2,7 +2,11 @@ import { HMRouter, HMRouterMgr } from "@hadss/hmrouter"
 import { AppStorageV2, PersistenceV2 } from "@kit.ArkUI"
 import {
   AppShoppingCart,
-  AppUserCenter, CartGoodsModel, Constants, EmptyContentComponent, NavigationBar, PAGE_PATH, RecommendComponent } from "basic"
+  AppUserCenter, CartGoodsModel, Constants,
+  CustomDialogHelper,
+  EmptyContentComponent, NavigationBar, PAGE_PATH, RecommendComponent,
+  ShoppingCartAuth,
+  updateShoppingCartApi } from "basic"
 import { CartItem } from "../components"
 import { emitter } from "@kit.BasicServicesKit"
 
@@ -34,7 +38,18 @@ export struct CartView {
               ListItem() {
                 CartItem({
                   cartGoodsModel: object.item,
-                  onChangeSelected: async selected => {}
+                  onChangeSelected: async selected => {},
+                  onChangeCount: async count => {
+                    const tips = CustomDialogHelper.getInstance().showLoading({
+                      title: '正在更改数量...'
+                    })
+                    await updateShoppingCartApi(object.item.skuId, {
+                      selected: object.item.selected,
+                      count
+                    })
+                    ShoppingCartAuth.getInstance().updateCartCount() // 更新购物车数量
+                    tips()
+                  }
                 })
               }
               .backgroundColor($r('[basic].color.under'))

@@ -108,3 +108,11 @@ export interface AddCartParams {
 export interface CartCount {
   count: number
 }
+
+/**
+ * 更新购物车数量
+ */
+export interface UpdateCartCount {
+  selected: boolean
+  count: number
+}

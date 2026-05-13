@@ -106,7 +106,7 @@ export class CustomDialogHelper {
   Column({ space: 20 }) {
     LoadingProgressComponent({
       progressWidth: options?.pWidth ?? 40,
-      strokeWidth: options?.strokeWidth ?? 8,
+      strokeWidth: options?.strokeWidth ?? 4,
       progressColor: options?.color ?? $r("app.color.white")
     })
     Text(options?.title ?? "加载中...")
