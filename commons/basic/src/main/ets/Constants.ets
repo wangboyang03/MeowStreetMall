@@ -3,6 +3,7 @@ export class Constants {
   static readonly SUCCESS_TYPE = '1'; // 成功标识
   static readonly TIME_OUT = 600000; // 超时时间
   static readonly TIP_SOUND: string = "sound.mp3"
+  static readonly SWITCH_TAB: string = 'switch_tab'
 }
 
 export class PAGE_PATH {

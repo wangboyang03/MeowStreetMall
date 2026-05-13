@@ -1,6 +1,12 @@
+import { HMRouterMgr } from "@hadss/hmrouter"
 import { PersistenceV2 } from "@kit.ArkUI"
-import { CartGoodsModel, NavigationBar, RecommendComponent, UserInformation } from "basic"
+import { CartGoodsModel,
+  Constants,
+  EmptyContentComponent, NavigationBar,
+  PAGE_PATH,
+  RecommendComponent, UserInformation } from "basic"
 import { CartItem } from "../components"
+import { emitter } from "@kit.BasicServicesKit"
 
 @ComponentV2
 export struct CartView {
@@ -43,11 +49,35 @@ export struct CartView {
               })
             })
           } else {
-            ListItem() {}
+            ListItem() {
+              // 购物车是空的
+              EmptyContentComponent({
+                title: `您的购物袋是空的`,
+                buttonLabel: '回到首页',
+                onButtonClick: () => {
+                  // 通过发送广播的方式切换底Tab到首页
+                  emitter.emit(Constants.SWITCH_TAB, {
+                    data: {
+                      index: 0
+                    }
+                  })
+                }
+              })
+            }
           }
         } else {
           // 没有登录
-          ListItem() {}
+          ListItem() {
+            EmptyContentComponent({
+              title: '请先登录再使用购物袋功能',
+              buttonLabel: '立即登录',
+              onButtonClick: () => {
+                HMRouterMgr.push({
+                  pageUrl: PAGE_PATH.LOGIN_PAGE
+                })
+              }
+            })
+          }
         }
         // 猜喜
         ListItem() {

@@ -1,10 +1,11 @@
-import { AppBreakPoint, AppSafeArea, BreakPointType, PAGE_PATH, TabItem } from 'basic'
+import { AppBreakPoint, AppSafeArea, BreakPointType, Constants, PAGE_PATH, TabItem } from 'basic'
 import { CartView } from 'cart'
 import { CategoryView } from 'category'
 import { HomePageView } from 'homepage'
 import { MineView } from 'mine'
 import { AppStorageV2, AttributeUpdater } from '@kit.ArkUI'
 import { HMDefaultGlobalAnimator, HMNavigation } from '@hadss/hmrouter'
+import { emitter } from '@kit.BasicServicesKit'
 
 @Entry
 @ComponentV2
@@ -19,6 +20,22 @@ struct Index {
     { text: '我的', normal: $r('app.media.ic_public_my_normal'), active: $r('app.media.ic_public_my_active') },
   ]
   modifierObject: MyModifier = new MyModifier() // 修改Navigation特性对象实例
+
+  /**
+   * 统一注册广播事件监听
+   */
+  registerEvent() {
+    // 切换底Tab到首页
+    emitter.on(Constants.SWITCH_TAB, (event) => {
+      if (event.data) {
+        this.activeIndex = event.data["index"] as number
+      }
+    })
+  }
+
+  aboutToAppear(): void {
+    this.registerEvent()
+  }
 
   build() {
     Column() {
