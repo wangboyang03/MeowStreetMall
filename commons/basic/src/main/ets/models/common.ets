@@ -1,5 +1,6 @@
-import { CategoryItem } from ".";
+import { CartGoodsModel, CategoryItem } from ".";
 import { BreakPointEnum } from "./breakPoint";
+import { Type } from "@kit.ArkUI";
 
 @ObservedV2
 export class AppBreakPoint {
@@ -47,10 +48,35 @@ export interface ConfirmOption {
 /**
  * 持久化存儲用戶信息
  */
+export interface UserInformation {
+  token: string
+  nickname: string
+  avatar: string
+  account: string
+}
+
+/**
+ * 全局用户类型
+ */
 @ObservedV2
-export class UserInformation {
-  @Trace token: string = ""
-  @Trace nickname: string = ""
-  @Trace avatar: string = ""
-  @Trace account: string = ""
+export class User implements UserInformation {
+  @Trace token: string = ''
+  @Trace avatar: string = ''
+  @Trace nickname: string = ''
+  @Trace account: string = ''
+}
+
+@ObservedV2
+export class AppUserCenter {
+  @Type(User) // 序列化复杂数据类型的时候需要用Type修饰这个持久化的属性
+  @Trace user: User = new User()
+}
+
+/**
+ * 全局购物袋
+ */
+@ObservedV2
+export class AppShoppingCart {
+  @Trace count: number = 0
+  @Trace cartList: CartGoodsModel[] = []
 }

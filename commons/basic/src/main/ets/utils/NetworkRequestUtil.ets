@@ -1,7 +1,10 @@
 import { rcp } from '@kit.RemoteCommunicationKit';
-import { Constants } from '../Constants';
+import { Constants, PAGE_PATH } from '../Constants';
 import { ResponseData } from '../models';
 import { promptAction } from '@kit.ArkUI';
+import { Auth } from './Auth';
+import { User } from '../models/common';
+import { HMRouterMgr } from '@hadss/hmrouter';
 
 // Rcp拦截器需要单独实例化 实现rcp.Interceptor类
 class RequestInterceptor implements rcp.Interceptor {
@@ -15,6 +18,10 @@ class RequestInterceptor implements rcp.Interceptor {
     // TODO: to from next axios返回类型无法更改 请求拦截器 注入Token
     if (typeof context.request.content == 'object') {
       context.request.content = JSON.parse(JSON.stringify(context.request.content).replace(/__ob_/g, "")) as rcp.RequestContent
+    }
+    const user = Auth.getInstance().getUser() // 获取用户信息
+    if (!!user?.token && !!context.request.headers) {
+      context.request.headers.authorization = `Bearer ${user.token}`
     }
     return next.handle(context);
   }
@@ -32,6 +39,10 @@ class ResponseInterceptor implements rcp.Interceptor {
     const result = await next.handle(context) // 将结构返回给下一个执行链
     if (result.statusCode == 401) {
       // Token过期 无感刷新token
+      Auth.getInstance().setUser({} as User)
+      HMRouterMgr.push({
+        pageUrl: PAGE_PATH.LOGIN_PAGE
+      })
     }
     return result
   }

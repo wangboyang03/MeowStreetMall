@@ -1,11 +1,11 @@
-import { AppSafeArea, NavigationColumnComponent, PAGE_PATH, RecommendComponent, UserInformation } from "basic"
+import { AppSafeArea, AppUserCenter, NavigationColumnComponent, PAGE_PATH, RecommendComponent } from "basic"
 import { AppStorageV2, PersistenceV2 } from "@kit.ArkUI"
 import { HMRouterMgr } from "@hadss/hmrouter"
 
 @ComponentV2
 export struct MineView {
-  safeAreaObject: AppSafeArea = AppStorageV2.connect(AppSafeArea, () => new AppSafeArea())! // 安全区避让对象
-  userInformation: UserInformation = PersistenceV2.connect(UserInformation, () => new UserInformation())! // 用户信息
+  safeAreaObject?: AppSafeArea = AppStorageV2.connect(AppSafeArea, () => new AppSafeArea()) // 安全区避让对象
+  appUserCenter?: AppUserCenter = PersistenceV2.connect(AppUserCenter, () => new AppUserCenter()) // 用户信息
   build() {
     Column() {
       Scroll() {
@@ -27,7 +27,7 @@ export struct MineView {
     Column() {
       Row() {
         Blank()
-        if (!!(this.userInformation.token && this.userInformation.account)) {
+        if (!!(this.appUserCenter?.user.token && this.appUserCenter?.user.account)) {
           Image($r('[basic].media.ic_public_settings'))
             .width(24)
             .aspectRatio(1)
@@ -42,12 +42,12 @@ export struct MineView {
       .height(50)
 
       Row({ space: 16 }) {
-        if (!!this.userInformation.token) {
-          Image(this.userInformation.avatar ?? $r('app.media.ic_user_avatar'))
+        if (!!this.appUserCenter?.user.token) {
+          Image(this.appUserCenter?.user.avatar ?? $r('app.media.ic_user_avatar'))
             .width(40)
             .aspectRatio(1)
             .borderRadius(20)
-          Text(this.userInformation.nickname ?? 'null')
+          Text(this.appUserCenter?.user.nickname ?? 'null')
             .fontColor($r('[basic].color.black'))
             .fontWeight(500)
         } else {
@@ -89,7 +89,7 @@ export struct MineView {
       })
 
     }
-    .padding({ left: 16, right: 16, top: this.safeAreaObject.topHeight })
+    .padding({ left: 16, right: 16, top: this.safeAreaObject?.topHeight })
     .linearGradient({
       angle: 180,
       colors: [['#FFF1E5', 0], [$r('[basic].color.under'), 1]]

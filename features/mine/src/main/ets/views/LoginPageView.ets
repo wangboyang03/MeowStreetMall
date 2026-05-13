@@ -1,6 +1,5 @@
 import { HMRouter, HMRouterMgr } from "@hadss/hmrouter";
-import { CustomDialogHelper, HuaweiAuthManager, NavigationBar, PAGE_PATH, UserInformation } from "basic";
-import { PersistenceV2, promptAction } from "@kit.ArkUI";
+import { Auth, CustomDialogHelper, HuaweiAuthManager, NavigationBar, PAGE_PATH } from "basic";
 import { huaweiLoginApi, userLoginApi } from "../apis";
 
 @HMRouter({ pageUrl: PAGE_PATH.LOGIN_PAGE })
@@ -36,12 +35,12 @@ export struct LoginPageView {
     // CustomDialogHelper.getInstance().showAlertDialog({
     //   message: JSON.stringify(loginResult)
     // })
-    const userInformation = PersistenceV2.connect(UserInformation, () => new UserInformation())
-    if (!!userInformation) {
-      userInformation.account = loginResult.account
-      userInformation.nickname = loginResult.nickname
-      userInformation.avatar = loginResult.avatar
-      userInformation.token = loginResult.token
+    const user = Auth.getInstance().getUser()
+    if (!!user) {
+      user.account = loginResult.account
+      user.nickname = loginResult.nickname
+      user.avatar = loginResult.avatar
+      user.token = loginResult.token
       HMRouterMgr.pop() // 登錄成功返回上一頁
     } else {
       CustomDialogHelper.getInstance().showAlertDialog({

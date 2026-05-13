@@ -1,19 +1,16 @@
-import { CellComponent, CellGroupComponent,
-  CustomDialogHelper,
-  HuaweiAuthManager,
-  NavigationBar, PAGE_PATH, UserInformation } from "basic";
+import {AppUserCenter, CellComponent, CellGroupComponent, CustomDialogHelper, HuaweiAuthManager, NavigationBar, PAGE_PATH, UserInformation } from "basic";
 import { PersistenceV2 } from "@kit.ArkUI";
 import { HMRouter, HMRouterMgr } from "@hadss/hmrouter";
 
 @HMRouter({ pageUrl: PAGE_PATH.SETTING_PAGE })
 @ComponentV2
 export struct SettingPageView {
-  userInformation: UserInformation = PersistenceV2.connect(UserInformation, () => new UserInformation())! // 用户信息
+  appUserCenter?: AppUserCenter = PersistenceV2.connect(AppUserCenter, () => new AppUserCenter()) // 用户信息
 
   build() {
     Column() {
       NavigationBar({
-        title: '設置',
+        title: '设置',
         onLeftClick: () => HMRouterMgr.pop() // 点击返回
       })
       Column({ space: 8 }) {
@@ -45,10 +42,12 @@ export struct SettingPageView {
               CustomDialogHelper.getInstance().showConfirmDialog({
                 message: '您确认要退出登录吗?',
                 onRightClick: () => {
-                  this.userInformation.token = ""
-                  this.userInformation.avatar = ""
-                  HuaweiAuthManager.getInstance().exitAuth() // 退出华为登录
-                  HMRouterMgr.pop()
+                  if (!!this.appUserCenter) {
+                    this.appUserCenter.user.token = ""
+                    this.appUserCenter.user.avatar = ""
+                    HuaweiAuthManager.getInstance().exitAuth() // 退出华为登录
+                    HMRouterMgr.pop()
+                  }
                 }
               })
             })
@@ -78,7 +77,7 @@ export struct SettingPageView {
         })
         .onClick(() => {})
 
-      Image(this.userInformation.avatar ?? $r("app.media.ic_user_avatar"))
+      Image(this.appUserCenter?.user.avatar ?? $r("app.media.ic_user_avatar"))
         .alt($r("app.media.ic_user_avatar"))
         .width(50)
         .aspectRatio(1)
@@ -91,10 +90,10 @@ export struct SettingPageView {
         })
         .id("avatar")
       Column({ space: 4 }) {
-        Text(this.userInformation.nickname ?? this.userInformation.account)
+        Text(this.appUserCenter?.user.nickname ?? this.appUserCenter?.user.account)
           .fontColor($r('[basic].color.black'))
           .fontWeight(500)
-        Text('賬號：' + this.userInformation.account)
+        Text('账号：' + this.appUserCenter?.user.account)
           .fontColor($r('[basic].color.gray'))
           .fontSize(12)
       }

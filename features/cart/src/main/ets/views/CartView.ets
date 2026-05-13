@@ -1,16 +1,12 @@
 import { HMRouterMgr } from "@hadss/hmrouter"
 import { PersistenceV2 } from "@kit.ArkUI"
-import { CartGoodsModel,
-  Constants,
-  EmptyContentComponent, NavigationBar,
-  PAGE_PATH,
-  RecommendComponent, UserInformation } from "basic"
+import {AppUserCenter, CartGoodsModel, Constants, EmptyContentComponent, NavigationBar, PAGE_PATH, RecommendComponent } from "basic"
 import { CartItem } from "../components"
 import { emitter } from "@kit.BasicServicesKit"
 
 @ComponentV2
 export struct CartView {
-  userInformation?: UserInformation = PersistenceV2.connect(UserInformation, () => new UserInformation()) // 用户信息
+  userInformation?: AppUserCenter = PersistenceV2.connect(AppUserCenter, () => new AppUserCenter()) // 用户信息
   @Local cartList: CartGoodsModel[] = [] // 购物车列表
 
   onCheckOrder() {
@@ -29,7 +25,7 @@ export struct CartView {
       })
 
       List() {
-        if (!!this.userInformation?.token) {
+        if (!!this.userInformation?.user.token) {
           if (this.cartList.length) {
             ForEach(this.cartList, (cart: CartGoodsModel) => {
               ListItem() {

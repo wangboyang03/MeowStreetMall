@@ -1,7 +1,7 @@
 import { HMLifecycleState, HMRouter, HMRouterMgr } from "@hadss/hmrouter"
-import { AppSafeArea, CustomDialogHelper, NavigationBar, PAGE_PATH, RecommendComponent, SkuType, Sku } from "basic"
+import { AppSafeArea, CustomDialogHelper, NavigationBar, PAGE_PATH, RecommendComponent, SkuType, Sku, Auth, addShoppingCartApi} from "basic"
 import { Goods, StoreType } from "../models"
-import { AppStorageV2 } from "@kit.ArkUI"
+import { AppStorageV2, PersistenceV2 } from "@kit.ArkUI"
 import { GoodsInformation } from "../components/GoodsInformation"
 import { GoodsComment } from "../components/GoodsComment"
 import { GoodsDetail } from "../components"
@@ -18,7 +18,7 @@ export struct GoodsPageView {
   @Local goodsCount: number = 1 // 商品默认数量
   scroller = new Scroller() // 滚动控制器
   tabsList: string[] = ["商品", "评价", "详情", "推荐"]
-  safeAreaObject: AppSafeArea = AppStorageV2.connect(AppSafeArea, () => new AppSafeArea())! // 安全区避让对象
+  safeAreaObject?: AppSafeArea = AppStorageV2.connect(AppSafeArea, () => new AppSafeArea()) // 安全区避让对象
 
   aboutToAppear(): void {
     const goods = HMRouterMgr.getCurrentParam() as Goods
@@ -61,6 +61,41 @@ export struct GoodsPageView {
         color: $r("[basic].color.yellow"),
         canBuy: true
       } as StoreType
+    }
+  }
+
+  /**
+   * 添加到购物袋
+   */
+  async addShoppingCart() {
+    const user = Auth.getInstance().getUser()
+    if (!!user?.token) {
+      if (this.sku.id) {
+        const loadingTips = CustomDialogHelper.getInstance().showLoading({
+          title: '正在加入中...'
+        })
+        await addShoppingCartApi({
+          skuId: this.sku.id,
+          count: this.goodsCount
+        }) // 前端没有理由直接带入商品价格
+        this.showSheet = false
+        CustomDialogHelper.getInstance().showToast({
+          message: '添加成功'
+        })
+        loadingTips()
+      } else {
+        CustomDialogHelper.getInstance().showToast({
+          message: '请先选择商品规格'
+        })
+      }
+    } else {
+      this.showSheet = false
+      CustomDialogHelper.getInstance().showToast({
+        message: '请先登录'
+      })
+      HMRouterMgr.push({
+        pageUrl: PAGE_PATH.LOGIN_PAGE
+      })
     }
   }
 
@@ -136,7 +171,7 @@ export struct GoodsPageView {
       }
       .width('100%')
       .height(54)
-      .margin({ bottom: this.safeAreaObject.topHeight })
+      .margin({ bottom: this.safeAreaObject?.topHeight })
     }
     .height('100%')
     .bindSheet($$this.showSheet, this.AddCartBuilder(),
@@ -252,7 +287,7 @@ export struct GoodsPageView {
       Row() {
         Button(this.loading ? '加入中...' : '加入购物袋')
           .buyButton($r('[basic].color.black'), true)
-          .onClick(() => {})
+          .onClick(() => this.addShoppingCart())
         Button('立即购买')
           .buyButton($r('[basic].color.red'), false)
           .onClick(async () => {})
@@ -264,7 +299,7 @@ export struct GoodsPageView {
       left: 16,
       right: 16,
       top: 16,
-      bottom: this.safeAreaObject.bottomHeight ?? 16
+      bottom: this.safeAreaObject?.bottomHeight ?? 16
     })
   }
 }

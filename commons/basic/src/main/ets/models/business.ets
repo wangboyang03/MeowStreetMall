@@ -96,3 +96,11 @@ export class CartGoodsModel implements CartGoods {
     this.attrsText = model.attrsText
   }
 }
+
+/**
+ * 加入购物车的参数类型
+ */
+export interface AddCartParams {
+  skuId: string
+  count: number
+}
