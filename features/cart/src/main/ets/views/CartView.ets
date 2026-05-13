@@ -1,12 +1,6 @@
 import { HMRouter, HMRouterMgr } from "@hadss/hmrouter"
 import { AppStorageV2, PersistenceV2 } from "@kit.ArkUI"
-import {
-  AppShoppingCart,
-  AppUserCenter, CartGoodsModel, Constants,
-  CustomDialogHelper,
-  EmptyContentComponent, NavigationBar, PAGE_PATH, RecommendComponent,
-  ShoppingCartAuth,
-  updateShoppingCartApi } from "basic"
+import { AppShoppingCart, AppUserCenter, CartGoodsModel, Constants, EmptyContentComponent, NavigationBar, PAGE_PATH, RecommendComponent, selectOrUnSelectCartApi, ShoppingCartAuth, UpdateCartCount, updateShoppingCartApi } from "basic"
 import { CartItem } from "../components"
 import { emitter } from "@kit.BasicServicesKit"
 
@@ -20,6 +14,14 @@ export struct CartView {
     AlertDialog.show({
       message: '去结算'
     })
+  }
+
+  /**
+   * 计算全选按钮是否勾选
+   * @returns boolean 是否全选
+   */
+  @Computed get isCheckAll() {
+    return this.appShoppingCart?.cartList.every(item => item.selected)
   }
 
   build() {
@@ -38,17 +40,19 @@ export struct CartView {
               ListItem() {
                 CartItem({
                   cartGoodsModel: object.item,
-                  onChangeSelected: async selected => {},
-                  onChangeCount: async count => {
-                    const tips = CustomDialogHelper.getInstance().showLoading({
-                      title: '正在更改数量...'
+                  onChangeSelected: async selected => {
+                    await updateShoppingCartApi(object.item.skuId, {
+                      selected,
+                      count: object.item.count
                     })
+                    ShoppingCartAuth.getInstance().updateCartCount() // 数据数量发生改变
+                  },
+                  onChangeCount: async count => {
                     await updateShoppingCartApi(object.item.skuId, {
                       selected: object.item.selected,
                       count
                     })
                     ShoppingCartAuth.getInstance().updateCartCount() // 更新购物车数量
-                    tips()
                   }
                 })
               }
@@ -112,8 +116,14 @@ export struct CartView {
       if (this.appShoppingCart?.cartList.length) {
         Row() {
           Checkbox()
+            .select(this.isCheckAll)
             .selectedColor($r('[basic].color.red'))
-            .onClick(async () => {})
+            .onClick(async () => {
+              await selectOrUnSelectCartApi({
+                selected: !this.isCheckAll
+              } as UpdateCartCount)
+              ShoppingCartAuth.getInstance().updateCartCount()
+            })
           Text('全选')
             .fontSize(14)
             .fontColor($r('[basic].color.black'))

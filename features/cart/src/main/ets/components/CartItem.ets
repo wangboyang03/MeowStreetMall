@@ -12,7 +12,10 @@ export struct CartItem {
         .selectedColor($r('[basic].color.red'))
         .size({ width: 14, height: 14 })
         .select(this.cartGoodsModel.selected)
-        .onClick(() => {})
+        .onClick(() => {
+          this.cartGoodsModel.selected = !this.cartGoodsModel.selected // 取反
+          this.onChangeSelected(this.cartGoodsModel.selected)
+        })
 
       Image(this.cartGoodsModel.picture)
         .width(80)

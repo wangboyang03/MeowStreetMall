@@ -8,3 +8,5 @@ export const getShoppingCartCountApi = () => RequestRemoteCommunication.get<Cart
 export const getShoppingCartListApi = () => RequestRemoteCommunication.get<CartGoods[]>("/member/cart")
 
 export const updateShoppingCartApi = (skuId: string, data: UpdateCartCount) => RequestRemoteCommunication.put<null>(`/member/cart/${skuId}`, data)
+
+export const selectOrUnSelectCartApi = (data: UpdateCartCount) => RequestRemoteCommunication.put<null>("/member/cart/selected", data)
