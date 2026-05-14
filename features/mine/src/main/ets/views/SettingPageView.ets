@@ -23,7 +23,11 @@ export struct SettingPageView {
         Blank()
         CellGroupComponent() {
           CellComponent({
-            leftLabel: '收货地址管理', onRightClick: () => {}
+            leftLabel: '收货地址管理', onRightClick: () => {
+              HMRouterMgr.push({
+                pageUrl: PAGE_PATH.ADDRESS_PAGE
+              })
+            }
           })
           CellComponent({ leftLabel: '账号安全' })
           CellComponent({ leftLabel: '消息设置' })
