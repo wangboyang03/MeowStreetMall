@@ -1,6 +1,6 @@
 import { AddressItem, AppSafeArea, NavigationBar, PAGE_PATH } from "basic";
 import { AppStorageV2 } from "@kit.ArkUI";
-import { HMRouter } from "@hadss/hmrouter";
+import { HMLifecycleState, HMRouter, HMRouterMgr } from "@hadss/hmrouter";
 
 @HMRouter({ pageUrl: PAGE_PATH.ADDRESS_PAGE })
 @ComponentV2
@@ -14,7 +14,10 @@ export struct AddressPageView {
   getAddressList() {}
 
   aboutToAppear(): void {
-    this.getAddressList()
+    // 返回就要刷新地址 利用Navigation生命钩子onShown()
+    HMRouterMgr.getCurrentLifecycleOwner()?.addObserver(HMLifecycleState.onShown, () => {
+      this.getAddressList()
+    })
   }
 
   build() {
@@ -94,7 +97,11 @@ export struct AddressPageView {
           .backgroundColor($r('[basic].color.black'))
           .fontSize(14)
           .width('100%')
-          .onClick(() => {})
+          .onClick(() => {
+            HMRouterMgr.push({
+              pageUrl: PAGE_PATH.CREATE_ADDRESS_PAGE
+            })
+          })
       }
       .height(46)
       .padding({ left: 16, right: 16, })

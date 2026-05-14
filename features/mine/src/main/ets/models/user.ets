@@ -17,5 +17,29 @@ export interface HuaweiLoginParams {
   clientId: string; // 客户端id
   clientSecret: string; // 客户端秘钥
   code: string; // 华为授权码
+}
 
+export interface IAddressForm {
+  address: string
+  contact: string
+  isDefault: 0 | 1 // 0 默认 1 非默认
+  receiver: string
+}
+
+/**
+ * 地址
+ */
+@ObservedV2
+export class AddressForm {
+  @Trace address: string = ""
+  @Trace contact: string = ""
+  @Trace isDefault: 0 | 1 = 0
+  @Trace receiver: string = ""
+
+  constructor(item: IAddressForm) {
+    this.address = item.address
+    this.contact = item.contact
+    this.receiver = item.receiver
+    this.isDefault = item.isDefault
+  }
 }
