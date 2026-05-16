@@ -20,9 +20,10 @@ export interface HuaweiLoginParams {
 }
 
 export interface IAddressForm {
+  id?: string // 商品id
   address: string
   contact: string
-  isDefault: 0 | 1 // 0 默认 1 非默认
+  isDefault: 0 | 1
   receiver: string
 }
 
@@ -31,12 +32,14 @@ export interface IAddressForm {
  */
 @ObservedV2
 export class AddressForm {
+  @Trace id?: string = ""
   @Trace address: string = ""
   @Trace contact: string = ""
   @Trace isDefault: 0 | 1 = 0
   @Trace receiver: string = ""
 
   constructor(item: IAddressForm) {
+    this.id = item.id
     this.address = item.address
     this.contact = item.contact
     this.receiver = item.receiver

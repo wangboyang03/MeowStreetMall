@@ -1,6 +1,8 @@
-import { AddressItem, AppSafeArea, NavigationBar, PAGE_PATH } from "basic";
+import { AddressItem, AppSafeArea, NavigationBar, PAGE_PATH, CustomDialogHelper } from "basic";
 import { AppStorageV2 } from "@kit.ArkUI";
 import { HMLifecycleState, HMRouter, HMRouterMgr } from "@hadss/hmrouter";
+import { addAddressListApi, deleteAddressListApi, getAddressListApi, updateAddressListApi } from "../apis/user";
+import { IAddressForm } from "../models";
 
 @HMRouter({ pageUrl: PAGE_PATH.ADDRESS_PAGE })
 @ComponentV2
@@ -11,7 +13,11 @@ export struct AddressPageView {
   /**
    * 获取地址列表
    */
-  getAddressList() {}
+  async getAddressList() {
+    const addressList = await getAddressListApi()
+    addressList.reverse()
+    this.addressList = addressList
+  }
 
   aboutToAppear(): void {
     // 返回就要刷新地址 利用Navigation生命钩子onShown()
@@ -80,6 +86,9 @@ export struct AddressPageView {
                 .backgroundColor($r('[basic].color.white'))
               }
               .margin({ bottom: 10 })
+              .swipeAction({
+                end: this.ActionBuilder(item.id)
+              })
             }
           )
         }
@@ -125,12 +134,30 @@ export struct AddressPageView {
       .layoutWeight(1)
       .height('100%')
       .backgroundColor($r('[basic].color.black'))
+      .onClick(async () => {
+        const object = this.addressList.find(item => item.id == id)
+        if (!!object) {
+          object.isDefault = 0
+          await updateAddressListApi(object as IAddressForm)
+          CustomDialogHelper.getInstance().showToast({
+            message: '该地址已设置为默认地址'
+          })
+          this.getAddressList()
+        }
+      })
 
       Row() {
         Text('删除')
           .fontColor($r('[basic].color.white'))
           .fontSize(11)
           .padding({ left: 10, right: 10 })
+          .onClick(async () => {
+            await deleteAddressListApi(id)
+            CustomDialogHelper.getInstance().showToast({
+              message: '删除成功'
+            })
+            this.getAddressList()
+          })
       }
       .backgroundColor($r('[basic].color.red'))
       .layoutWeight(1)
