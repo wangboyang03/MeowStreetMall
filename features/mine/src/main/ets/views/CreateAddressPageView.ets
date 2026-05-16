@@ -1,6 +1,6 @@
 import { HMRouter, HMRouterMgr } from "@hadss/hmrouter";
 import { AppSafeArea, CustomDialogHelper, NavigationBar, PAGE_PATH } from "basic";
-import { addAddressListApi } from "../apis";
+import { addAddressListApi, updateAddressListApi } from "../apis";
 import { AddressForm, IAddressForm } from "../models";
 import { AppStorageV2 } from "@kit.ArkUI";
 
@@ -20,20 +20,43 @@ export struct CreateAddressPageView {
     if (!this.addressFormData?.address) {
       return CustomDialogHelper.getInstance().showToast({ message: '收货人详细地址不能为空' })
     }
-    await addAddressListApi({
-      contact: this.addressFormData?.contact,
-      isDefault: this.addressFormData?.isDefault,
-      receiver: this.addressFormData?.receiver,
-      address: this.addressFormData?.address
-    })
-    CustomDialogHelper.getInstance().showToast({ message: '新增地址成功' })
+    if (!!this.addressFormData.id) {
+      await updateAddressListApi({
+        id: this.addressFormData.id,
+        contact: this.addressFormData.contact,
+        isDefault: this.addressFormData.isDefault,
+        receiver: this.addressFormData.receiver,
+        address: this.addressFormData.address
+      } as IAddressForm)
+      CustomDialogHelper.getInstance().showToast({ message: '修改地址成功' })
+    } else {
+      await addAddressListApi({
+        contact: this.addressFormData?.contact,
+        isDefault: this.addressFormData?.isDefault,
+        receiver: this.addressFormData?.receiver,
+        address: this.addressFormData?.address
+      } as IAddressForm)
+      CustomDialogHelper.getInstance().showToast({ message: '新增地址成功' })
+    }
     HMRouterMgr.pop()
+  }
+
+  @Computed get showTitle() {
+    return this.addressFormData.id ? "编辑地址" : "新增地址"
+  }
+
+  aboutToAppear(): void {
+    const param = HMRouterMgr.getCurrentParam() // 获取跳转时携带的路由参数
+    if (!!param) {
+      this.addressFormData = new AddressForm(param as IAddressForm)
+    }
   }
 
   build() {
     Column() {
       NavigationBar({
-        title: '新增地址页',
+        title: this.showTitle,
+        showLeftIcon: true,
         onLeftClick: () => HMRouterMgr.pop()
       })
 
