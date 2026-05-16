@@ -77,7 +77,14 @@ export struct AddressPageView {
                   .alignItems(HorizontalAlign.Start)
 
                   Row() {
-                    Image($r("[basic].media.ic_public_edit")).width(16)
+                    Image($r("[basic].media.ic_public_edit"))
+                      .width(16)
+                      .onClick(() => {
+                        HMRouterMgr.push({
+                          pageUrl: PAGE_PATH.CREATE_ADDRESS_PAGE,
+                          param: item
+                        })
+                      })
                   }
                 }
                 .padding(16)
@@ -118,8 +125,7 @@ export struct AddressPageView {
     .height('100%')
     .backgroundColor('#F5F4F9')
     .padding({
-      bottom: this.safeAreaObject?.bottomHeight,
-      top: this.safeAreaObject?.topHeight
+      bottom: this.safeAreaObject?.bottomHeight
     })
   }
 

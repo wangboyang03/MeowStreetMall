@@ -119,8 +119,7 @@ export struct CreateAddressPageView {
     .height('100%')
     .backgroundColor('#F5F4F9')
     .padding({
-      bottom: this.safeAreaObject?.bottomHeight,
-      top: this.safeAreaObject?.topHeight
+      bottom: this.safeAreaObject?.bottomHeight
     })
   }
 }
