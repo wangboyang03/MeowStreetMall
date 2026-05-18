@@ -1,7 +1,9 @@
 import { HMRouter, HMRouterMgr } from "@hadss/hmrouter";
 import { AddressItem, AppSafeArea, CellComponent,
   createOrderApi,
-  CustomDialogHelper, getPrepaymentOrderApi, NavigationBar, OrderGoodsItem, PAGE_PATH, PayChannel, Summary } from 'basic'
+  CustomDialogHelper, getPrepaymentOrderApi, NavigationBar, OrderGoodsItem, PAGE_PATH, PayChannel,
+  ShoppingCartAuth,
+  Summary } from 'basic'
 import { AppStorageV2 } from "@kit.ArkUI";
 import { ChangeAddressComponent } from "../components";
 
@@ -35,7 +37,13 @@ export struct CheckOrderPageView {
       goods: this.goodsList, // 商品列表
       addressId: this.addressId // 收获地址id
     })
-    CustomDialogHelper.getInstance().showToast({ message: result.id })
+    // CustomDialogHelper.getInstance().showToast({ message: result.id })
+    this.showPaySheet = false // 先关闭支付弹层
+    HMRouterMgr.push({
+      pageUrl: PAGE_PATH.PAY_PAGE_NESTED_H5,
+      param: result.id
+    }) // 然后携带路由参数跳转到三方支付页
+    ShoppingCartAuth.getInstance().updateCartCount() // 更新购物车数量 避免购物车留存已支付商品
     createOrderLoading()
   }
 

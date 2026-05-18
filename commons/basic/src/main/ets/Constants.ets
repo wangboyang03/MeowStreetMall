@@ -18,6 +18,7 @@ export class PAGE_PATH {
   static readonly ADDRESS_PAGE: string = "AddressPageView"
   static readonly CREATE_ADDRESS_PAGE: string = "CreateAddressPageView"
   static readonly CHECK_ORDER_PAGE: string = "CheckOrderPageView"
+  static readonly PAY_PAGE_NESTED_H5: string = "PayPageView"
 }
 
 /**
