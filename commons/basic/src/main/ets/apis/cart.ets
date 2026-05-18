@@ -1,5 +1,5 @@
 import { RequestRemoteCommunication } from "../utils";
-import { AddCartParams, CartCount, CartGoods, DeleteCartGoods, UpdateCartCount } from "../models";
+import { AddCartParams, CartCount, CartGoods, DeleteCartGoods, PrepaymentCreatedOrders, UpdateCartCount } from "../models";
 
 export const addShoppingCartApi = (data: AddCartParams) => RequestRemoteCommunication.post<null>("/member/cart", data)
 
@@ -12,3 +12,5 @@ export const updateShoppingCartApi = (skuId: string, data: UpdateCartCount) => R
 export const selectOrUnSelectCartApi = (data: UpdateCartCount) => RequestRemoteCommunication.put<null>("/member/cart/selected", data)
 
 export const deleteCartGoodsApi = (data: DeleteCartGoods) => RequestRemoteCommunication.delete<null>("/member/cart", undefined, data)
+
+export const getPrepaymentOrderApi = () => RequestRemoteCommunication.get<PrepaymentCreatedOrders>(`/member/order/pre`)
