@@ -60,3 +60,26 @@ export interface UserInformationResponse {
   nickname: string;
   profession: string;
 }
+
+@ObservedV2
+export class UserInformationModel implements UserInformationResponse {
+  account: string = ''
+  @Trace avatar: string = '' // 头像必须拥有响应式更新
+  birthday: string = ''
+  fullLocation: string = ''
+  gender: string = ''
+  id: string = ''
+  nickname: string = ''
+  profession: string = ''
+
+  constructor(model: UserInformationResponse) {
+    this.account = model.account
+    this.avatar = model.avatar
+    this.birthday = model.birthday
+    this.fullLocation = model.fullLocation
+    this.gender = model.gender
+    this.id = model.id
+    this.nickname = model.nickname
+    this.profession = model.profession
+  }
+}
