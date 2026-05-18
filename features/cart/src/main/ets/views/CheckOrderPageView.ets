@@ -1,5 +1,7 @@
 import { HMRouter, HMRouterMgr } from "@hadss/hmrouter";
-import { AddressItem, AppSafeArea, CellComponent, CustomDialogHelper, getPrepaymentOrderApi, NavigationBar, OrderGoodsItem, PAGE_PATH, PayChannel, Summary } from 'basic'
+import { AddressItem, AppSafeArea, CellComponent,
+  createOrderApi,
+  CustomDialogHelper, getPrepaymentOrderApi, NavigationBar, OrderGoodsItem, PAGE_PATH, PayChannel, Summary } from 'basic'
 import { AppStorageV2 } from "@kit.ArkUI";
 import { ChangeAddressComponent } from "../components";
 
@@ -24,6 +26,17 @@ export struct CheckOrderPageView {
       return CustomDialogHelper.getInstance().showToast({ message: '未选择收货地址' })
     }
     this.loading = true
+    const createOrderLoading = CustomDialogHelper.getInstance().showLoading({ title: '正在创建订单' })
+    const result = await createOrderApi({
+      deliveryTimeType: 0,
+      payType: 1, // 在线支付
+      buyerMessage: '', // 买家留言
+      payChannel: 1, // 支付渠道Alipay
+      goods: this.goodsList, // 商品列表
+      addressId: this.addressId // 收获地址id
+    })
+    CustomDialogHelper.getInstance().showToast({ message: result.id })
+    createOrderLoading()
   }
 
   /**
