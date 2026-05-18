@@ -28,6 +28,19 @@ export struct PayPageView {
         .padding({
           top: this.safeAreaObject?.topHeight
         })
+        .onPageBegin((event) => {
+          if (!!event?.url.includes("pay/redirect?payResult")) {
+            HMRouterMgr.getPathStack(PAGE_PATH.MAIN_PAGE_ID)?.clear() // 清空路由栈
+            // 跳转支付结果页
+            HMRouterMgr.push({
+              pageUrl: PAGE_PATH.PAY_RESULT_PAGE,
+              param: {
+                orderId: this.orderId,
+                payResult: event.url.includes("payResult=true")
+              }
+            })
+          }
+        })
     }
   }
 }
