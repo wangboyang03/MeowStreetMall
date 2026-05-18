@@ -1,8 +1,9 @@
 import { AbilityConstant, ConfigurationConstant, UIAbility, Want } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window } from '@kit.ArkUI';
-import { ScreenManager } from 'basic';
+import { CIPStorageManager, CustomDialogHelper, ScreenManager } from 'basic';
 import { HMRouterMgr } from '@hadss/hmrouter';
+import { rpc } from '@kit.IPCKit';
 
 const DOMAIN = 0x0000;
 
@@ -12,7 +13,14 @@ export default class PhoneAbility extends UIAbility {
       HMRouterMgr.init({
         context: this.context
       })
+      CIPStorageManager.getInstance().mContext = this.context // 获取上下文
       this.context.getApplicationContext().setColorMode(ConfigurationConstant.ColorMode.COLOR_MODE_NOT_SET);
+      this.callee.on("receiveFormId", (data) => {
+        const object = JSON.parse(data.readString()) as object
+        const formId = object["formId"] as string
+        CIPStorageManager.getInstance().saveFormId(formId) // 存盘
+        return new Params()
+      })
     } catch (err) {
       hilog.error(DOMAIN, 'testTag', 'Failed to set colorMode. Cause: %{public}s', JSON.stringify(err));
     }
@@ -52,5 +60,14 @@ export default class PhoneAbility extends UIAbility {
   onBackground(): void {
     // Ability has back to background
     hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onBackground');
+  }
+}
+
+class Params implements rpc.Parcelable {
+  marshalling(dataOut: rpc.MessageSequence): boolean {
+    return true
+  }
+  unmarshalling(dataIn: rpc.MessageSequence): boolean {
+    return true
   }
 }

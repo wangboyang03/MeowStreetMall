@@ -10,9 +10,29 @@
       "2in1"
     ],
     "requestPermissions": [
-      {"name": "ohos.permission.INTERNET"}, /** 申请网络权限 */
-      {"name": "ohos.permission.GET_NETWORK_INFO"}, /** 获取当前网络状态 */
-      {"name": "ohos.permission.MICROPHONE", "reason": "$string:microphone_reason", "usedScene": {"when": "always", "abilities": ["PhoneAbility"]}}, /** 麦克风权限 */
+      /** 申请网络权限 */
+      {
+        "name": "ohos.permission.INTERNET"
+      },
+      /** 获取当前网络状态 */
+      {
+        "name": "ohos.permission.GET_NETWORK_INFO"
+      },
+      /** 麦克风权限 */
+      {
+        "name": "ohos.permission.MICROPHONE",
+        "reason": "$string:microphone_reason",
+        "usedScene": {
+          "when": "always",
+          "abilities": [
+            "PhoneAbility"
+          ]
+        }
+      },
+      /** 后台运行权限 */
+      {
+        "name": "ohos.permission.KEEP_BACKGROUND_RUNNING",
+      }
     ],
     "deliveryWithInstall": true,
     "installationFree": false,
@@ -49,6 +69,19 @@
           {
             "name": "ohos.extension.backup",
             "resource": "$profile:backup_config"
+          }
+        ]
+      },
+      {
+        "name": "PhoneFormAbility",
+        "srcEntry": "./ets/phoneformability/PhoneFormAbility.ets",
+        "label": "$string:PhoneFormAbility_label",
+        "description": "$string:PhoneFormAbility_desc",
+        "type": "form",
+        "metadata": [
+          {
+            "name": "ohos.extension.form",
+            "resource": "$profile:form_config"
           }
         ]
       }

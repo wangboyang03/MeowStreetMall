@@ -3,6 +3,8 @@ import { getShoppingCartListApi } from "../apis";
 import { getShoppingCartCountApi } from "../apis/cart";
 import { CartGoodsModel } from "../models/business";
 import { AppShoppingCart, AppUserCenter } from "../models/common";
+import { CIPStorageManager } from "./CIPStorageManager";
+import { formBindingData, formProvider } from "@kit.FormKit";
 
 export class ShoppingCartAuth {
   private static sInstance: ShoppingCartAuth;
@@ -28,8 +30,22 @@ export class ShoppingCartAuth {
       // 获取购物车列表
       const list = await getShoppingCartListApi()
       appShoppingCart.cartList = list.map(item => new CartGoodsModel(item)) // ObservedV2必须实例化才具备响应式
+      this.pushCardDataWithCartCount(appShoppingCart.count)
     } else {
+      this.pushCardDataWithCartCount(0)
       appShoppingCart!.count = 0
+      appShoppingCart!.cartList = []
     }
+  }
+
+  /**
+   * 推送购物车数量到卡片
+   */
+  async pushCardDataWithCartCount(count: number) {
+    const formIdList = await CIPStorageManager.getInstance().getFormIdList()
+    const data = formBindingData.createFormBindingData({
+      "cartCount": count
+    }) // 創建卡片和应用工程数据桥
+    formIdList.forEach(formId => formProvider.updateForm(formId, data))
   }
 }

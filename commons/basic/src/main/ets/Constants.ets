@@ -4,6 +4,8 @@ export class Constants {
   static readonly TIME_OUT = 600000; // 超时时间
   static readonly TIP_SOUND: string = "sound.mp3"
   static readonly SWITCH_TAB: string = 'switch_tab'
+  static readonly STORAGE_NAME: string = "meowStreetMall"
+  static readonly FORM_NAME: string = "recommendWidgetCard"
 }
 
 export class PAGE_PATH {

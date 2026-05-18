@@ -15,6 +15,22 @@
     {
       "name": "microphone_reason",
       "value": "现在正在调用设备麦克风权限，用于应用访问录音或语音识别等功能，禁止后将导致无法录音或者相关功能异常"
+    },
+    {
+      "name": "PhoneFormAbility_desc",
+      "value": "form_description"
+    },
+    {
+      "name": "PhoneFormAbility_label",
+      "value": "form_label"
+    },
+    {
+      "name": "recommendWidget_desc",
+      "value": "This is a service widget."
+    },
+    {
+      "name": "recommendWidget_display_name",
+      "value": "recommendWidget"
     }
   ]
 }
