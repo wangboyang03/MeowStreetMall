@@ -46,3 +46,17 @@ export class AddressForm {
     this.isDefault = item.isDefault
   }
 }
+
+/**
+ * 用户登录返回信息
+ */
+export interface UserInformationResponse {
+  account: string;
+  avatar: string;
+  birthday: string;
+  fullLocation: string; // 完整收货地址
+  gender: string;
+  id: string;
+  nickname: string;
+  profession: string;
+}

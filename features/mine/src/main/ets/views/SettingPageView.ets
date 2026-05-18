@@ -82,7 +82,11 @@ export struct SettingPageView {
             align: HorizontalAlign.End
           }
         })
-        .onClick(() => {})
+        .onClick(() => {
+          HMRouterMgr.push({
+            pageUrl: PAGE_PATH.USER_CENTER_PAGE
+          })
+        })
 
       Image(this.appUserCenter?.user.avatar ?? $r("app.media.ic_user_avatar"))
         .alt($r("app.media.ic_user_avatar"))

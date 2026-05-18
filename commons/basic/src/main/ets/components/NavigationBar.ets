@@ -13,7 +13,7 @@ export struct NavigationBar {
   @Event onLeftClick: () => void = () => {}
   @Event onRightClick: () => void = () => {}
   @BuilderParam customTitle: () => void = this.defaultBuilder
-  safeAreaObject: AppSafeArea = AppStorageV2.connect(AppSafeArea, () => new AppSafeArea())! // 安全区避让对象
+  safeAreaObject?: AppSafeArea = AppStorageV2.connect(AppSafeArea, () => new AppSafeArea()) // 安全区避让对象
 
   build() {
     RelativeContainer() {
@@ -70,12 +70,12 @@ export struct NavigationBar {
       }
     }
     .padding({
-      top: this.safeAreaObject.topHeight,
+      top: this.safeAreaObject?.topHeight,
       left: 10,
       right: 10
     })
     .width("100%")
-    .height(50 + this.safeAreaObject.topHeight)
+    .height(50 + this.safeAreaObject?.topHeight!)
     .backgroundColor(this.bgColor)
   }
 
