@@ -118,7 +118,15 @@ export class RequestRemoteCommunication {
 
   // 上传下载
   static upload<T>() {}
-  static download<T>() {}
+
+  /**
+   * 下载文件
+   * @param url 下载地址
+   * @param data 下载参数
+   */
+  static download(url: string, data: rcp.DownloadToFile) {
+    return sInstance.downloadToFile(url, data)
+  }
 
   /**
    * 将数据转化成正确的数据类型

@@ -28,6 +28,7 @@ struct RecommendWidgetCard {
   @State count: number = 1
   @LocalStorageProp("formId") @Watch("updateForm") formId: string = ""
   @LocalStorageProp("cartCount") cartCount: number = 0 // 购物车商品数量
+  @LocalStorageProp("list") list: string[] = [] // 推荐图片列表
 
   updateForm() {
     if (!!this.formId) {
@@ -63,12 +64,16 @@ struct RecommendWidgetCard {
         }
       });
     })*/
-    Column({ space: 20 }) {
-      Text(`购物车数量是${this.cartCount}`)
+    Column() {
+      Swiper() {
+        ForEach(this.list, (url: string) => {
+          Image("memory://" + url) // 卡片只能用memory协议
+            .width("100%")
+            .height("100%")
+        })
+      }
     }
-    .justifyContent(FlexAlign.Center)
     .width("100%")
     .height("100%")
-    .backgroundColor(Color.Pink)
   }
 }

@@ -1,4 +1,8 @@
-import { AppBreakPoint, AppSafeArea, AppSharedData, BreakPointEnum, BreakPointType, CategoryItem, Constants, Goods, GoodsItem, LazyForEachDataSource, LoadingComponent, LoadingProgressComponent, PAGE_PATH, SoundPoolPlayer} from "basic";
+import { AppBreakPoint, AppSafeArea, AppSharedData, BreakPointEnum, BreakPointType,
+  CardPushManager,
+  CategoryItem, Constants, Goods, GoodsItem, LazyForEachDataSource, LoadingComponent, LoadingProgressComponent,
+  NetworkDownloadManager,
+  PAGE_PATH, SoundPoolPlayer} from "basic";
 import { DiscountGoods } from "../components";
 import { Banner, Params, DiscountType } from "../models";
 import { AppStorageV2, promptAction } from "@kit.ArkUI";
@@ -43,9 +47,11 @@ export struct HomePageView {
     }
     if (homePageData[2].status == "fulfilled") {
       this.saleGoods = homePageData[2].value?.subTypes?.[0]?.goodsItems?.items ?? []
+      NetworkDownloadManager.getInstance().downLoadMulti(this.saleGoods?.map(item => item?.picture) as string[]) // 下载图片
     }
     if (homePageData[3].status == "fulfilled") {
       this.hotGoods = homePageData[3].value?.subTypes?.[0]?.goodsItems?.items ?? []
+      CardPushManager.getInstance().pushImageList(this.hotGoods.slice(0, 3).map(item => item.picture as string)) // 將前三張圖片推送到卡片上顯示
     }
     if (homePageData[4].status == "fulfilled") {
       this.oneGoods = homePageData[4].value?.subTypes?.[0]?.goodsItems?.items ?? []
