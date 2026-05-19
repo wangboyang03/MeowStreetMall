@@ -1,13 +1,16 @@
 import { AbilityConstant, ConfigurationConstant, UIAbility, Want } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window } from '@kit.ArkUI';
-import { CIPStorageManager, CustomDialogHelper, ScreenManager } from 'basic';
+import { CIPStorageManager, PAGE_PATH, ScreenManager } from 'basic';
 import { HMRouterMgr } from '@hadss/hmrouter';
 import { rpc } from '@kit.IPCKit';
+import { emitter } from '@kit.BasicServicesKit';
 
 const DOMAIN = 0x0000;
 
 export default class PhoneAbility extends UIAbility {
+  private toUrl: string = "" // 跳转的页面
+
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
     try {
       HMRouterMgr.init({
@@ -21,10 +24,25 @@ export default class PhoneAbility extends UIAbility {
         CIPStorageManager.getInstance().saveFormId(formId) // 存盘
         return new Params()
       })
+      this.toUrl = want.parameters!["toUrl"] as string // 此时窗口尚未绘制 因此只做接收参数 不跳转
+      this.callee.on("updateRecommend", () => {
+        emitter.emit("updateRecommend") // 广播推荐页面进行更新
+        return new Params()
+      })
     } catch (err) {
       hilog.error(DOMAIN, 'testTag', 'Failed to set colorMode. Cause: %{public}s', JSON.stringify(err));
     }
     hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onCreate');
+  }
+
+  onNewWant(want: Want, launchParam: AbilityConstant.LaunchParam): void {
+    const url = want.parameters!["toUrl"] // 获取跳转的页面
+    if (url == 'recommend') {
+      const stack = HMRouterMgr.getPathStack(PAGE_PATH.MAIN_PAGE_ID) // 获取路由栈
+      if (stack?.getAllPathName().pop() != PAGE_PATH.RECOMMEND_PAGE) {
+        HMRouterMgr.push({ pageUrl: PAGE_PATH.RECOMMEND_PAGE })
+      }
+    }
   }
 
   onDestroy(): void {
@@ -43,6 +61,11 @@ export default class PhoneAbility extends UIAbility {
         return;
       }
       hilog.info(DOMAIN, 'testTag', 'Succeeded in loading the content.');
+      setTimeout(() => {
+        if (this.toUrl) {
+          HMRouterMgr.push({ pageUrl: PAGE_PATH.RECOMMEND_PAGE })
+        }
+      }, 100)
     });
   }
 

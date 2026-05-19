@@ -219,6 +219,7 @@ export struct HomePageView {
                   .borderRadius(8)
                   .padding(10)
                   .alignItems(HorizontalAlign.Start)
+                  .onClick(()=> HMRouterMgr.push({ pageUrl: PAGE_PATH.RECOMMEND_PAGE }))
 
                   // 爆款推荐+一站买全
                   Row({ space: 10 }) {

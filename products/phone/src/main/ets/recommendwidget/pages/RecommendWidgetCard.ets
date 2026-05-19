@@ -64,7 +64,7 @@ struct RecommendWidgetCard {
         }
       });
     })*/
-    Column() {
+    /*Column() {
       Swiper() {
         ForEach(this.list, (url: string) => {
           Image("memory://" + url) // 卡片只能用memory协议
@@ -74,6 +74,63 @@ struct RecommendWidgetCard {
       }
     }
     .width("100%")
+    .height("100%")*/
+    RelativeContainer() {
+      Button() {
+        Image($r("app.media.icon_rays"))
+          .width(12)
+          .aspectRatio(1)
+          .fillColor(Color.White)
+      }
+      .width(40)
+      .height(40)
+      .type(ButtonType.Circle)
+      .alignRules({
+        right: {
+          anchor: '__container__',
+          align: HorizontalAlign.End
+        }
+      })
+      .onClick(() => {
+        postCardAction(this, {
+          action: 'call',
+          abilityName: 'PhoneAbility',
+          params: {
+            method: 'updateRecommend'
+          }
+        })
+      })
+      .zIndex(2)
+
+      if (this.list.length) {
+        Swiper() {
+          ForEach(this.list, (url: string) => {
+            // 卡片上显示图片需要加上memory 内存协议
+            Image("memory://" + url)
+              .width("100%")
+              .height("100%")
+          })
+        }
+      } else {
+        Image($r("[basic].media.ic_public_empty"))
+          .width(40)
+          .aspectRatio(1)
+          .fillColor(Color.Orange)
+
+      }
+    }
+    .padding(10)
+    .backgroundColor("#ff73987a")
+    .width("100%")
     .height("100%")
+    .onClick(() => {
+      postCardAction(this, {
+        action: 'router',
+        abilityName: 'PhoneAbility',
+        params: {
+          toUrl: 'recommend'
+        }
+      })
+    })
   }
 }

@@ -23,6 +23,7 @@ export class PAGE_PATH {
   static readonly PAY_PAGE_NESTED_H5: string = "PayPageView"
   static readonly PAY_RESULT_PAGE: string = "PayResultPageView"
   static readonly USER_CENTER_PAGE: string = "UserCenterPageView"
+  static readonly RECOMMEND_PAGE: string = "RecommendPageView"
 }
 
 /**

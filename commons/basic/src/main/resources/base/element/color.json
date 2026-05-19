@@ -39,6 +39,10 @@
     {
       "name": "border",
       "value": "#e4e4e4"
+    },
+    {
+      "name": "teal",
+      "value": "#81CBCE"
     }
   ]
 }
